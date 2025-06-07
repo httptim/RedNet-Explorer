@@ -248,7 +248,8 @@ local function installFiles()
         
         -- Progress indicator
         local progress = math.floor((i / totalFiles) * 20)
-        term.setCursorPos(1, term.getCursorY())
+        local _, currentY = term.getCursorPos()
+        term.setCursorPos(1, currentY)
         term.clearLine()
         write("[")
         setColor(colors.lime)
