@@ -22,6 +22,282 @@
 
 This comprehensive reference covers all documentation pages for CC:Tweaked, a mod for Minecraft that adds programmable computers, turtles, and peripherals. The documentation is organized into several main categories.
 
+## Terminal API - UI and Theme Development Reference
+
+The terminal API is crucial for implementing themes and UI polish in RedNet-Explorer. Here's a detailed reference:
+
+### Color Management Functions
+
+#### Setting Colors
+- **`term.setTextColour(colour)`** or **`term.setTextColor(color)`**
+  - Sets the text color for subsequent writes
+  - Parameter: Color constant from `colors` API (e.g., `colors.red`, `colors.white`)
+  - No return value
+
+- **`term.setBackgroundColour(colour)`** or **`term.setBackgroundColor(color)`**
+  - Sets the background color for subsequent writes
+  - Parameter: Color constant from `colors` API
+  - No return value
+
+#### Getting Current Colors
+- **`term.getTextColour()`** or **`term.getTextColor()`**
+  - Returns: Current text color as a number
+
+- **`term.getBackgroundColour()`** or **`term.getBackgroundColor()`**
+  - Returns: Current background color as a number
+
+#### Palette Customization
+- **`term.setPaletteColour(index, color)`** or **`term.setPaletteColor(index, color)`**
+  - Customizes the RGB values of a color in the palette
+  - Parameters:
+    - `index`: Color constant from `colors` API
+    - `color`: Either a 24-bit RGB integer (0x000000 to 0xFFFFFF) OR three separate RGB values (0-1 floats)
+  - Examples:
+    ```lua
+    term.setPaletteColour(colors.red, 0xFF0000)  -- Bright red
+    term.setPaletteColour(colors.red, 1, 0, 0)   -- Same as above
+    ```
+
+- **`term.getPaletteColour(colour)`** or **`term.getPaletteColor(color)`**
+  - Gets current RGB values for a color
+  - Parameter: Color constant from `colors` API
+  - Returns: Three values (r, g, b) as floats from 0 to 1
+
+- **`term.nativePaletteColour(colour)`** or **`term.nativePaletteColor(color)`**
+  - Gets the default/native RGB values for a color
+  - Parameter: Color constant from `colors` API
+  - Returns: Three values (r, g, b) as floats from 0 to 1
+
+### Text Writing Functions
+
+- **`term.write(text)`**
+  - Writes text at current cursor position with current colors
+  - Parameter: String to write
+  - No return value
+
+- **`term.blit(text, textColour, backgroundColour)`**
+  - Advanced text writing with per-character color control
+  - Parameters:
+    - `text`: String to write
+    - `textColour`: String of hex digits (0-9, a-f) matching text length
+    - `backgroundColour`: String of hex digits matching text length
+  - Hex digit mapping:
+    - "0" = colors.white, "1" = colors.orange, "2" = colors.magenta
+    - "3" = colors.lightBlue, "4" = colors.yellow, "5" = colors.lime
+    - "6" = colors.pink, "7" = colors.gray, "8" = colors.lightGray
+    - "9" = colors.cyan, "a" = colors.purple, "b" = colors.blue
+    - "c" = colors.brown, "d" = colors.green, "e" = colors.red, "f" = colors.black
+  - Example:
+    ```lua
+    term.blit("Hello", "01234", "fffff")  -- Each letter different color, black background
+    ```
+
+### Cursor Control
+
+- **`term.getCursorPos()`**
+  - Returns: x, y coordinates of cursor (two values)
+
+- **`term.setCursorPos(x, y)`**
+  - Moves cursor to specified position
+  - Parameters: x, y coordinates (1-based)
+
+- **`term.getCursorBlink()`**
+  - Returns: Boolean indicating if cursor is blinking
+
+- **`term.setCursorBlink(blink)`**
+  - Parameter: Boolean to enable/disable cursor blinking
+
+### Screen Management
+
+- **`term.clear()`**
+  - Fills entire screen with current background color
+  - Cursor position unchanged
+
+- **`term.clearLine()`**
+  - Clears current line with background color
+  - Cursor position unchanged
+
+- **`term.scroll(n)`**
+  - Scrolls terminal content vertically
+  - Parameter: Number of lines (positive = up, negative = down)
+
+- **`term.getSize()`**
+  - Returns: width, height of terminal (two values)
+
+### Terminal Properties
+
+- **`term.isColour()`** or **`term.isColor()`**
+  - Returns: Boolean indicating if terminal supports colors
+
+### Window Management
+
+- **`term.redirect(target)`**
+  - Redirects all terminal output to another terminal object
+  - Parameter: Terminal-like object (monitor, window, etc.)
+  - Returns: Previous terminal object
+  - Useful for rendering to different outputs
+
+- **`term.current()`**
+  - Returns: Current terminal object being written to
+
+- **`term.native()`**
+  - Returns: The native/original terminal object
+
+## Window API - UI Panels and Dialog Boxes Reference
+
+The window API is essential for creating UI panels, dialog boxes, and mobile-optimized layouts in RedNet-Explorer. Windows act as "terminal redirects" that occupy smaller areas of an existing terminal.
+
+### Creating Windows
+
+- **`window.create(parent, x, y, width, height [, visible])`**
+  - Creates a new window object
+  - Parameters:
+    - `parent`: The base terminal to draw on (e.g., `term.current()`)
+    - `x`: X coordinate within parent terminal (1-based)
+    - `y`: Y coordinate within parent terminal (1-based)
+    - `width`: Width of the window in characters
+    - `height`: Height of the window in characters
+    - `visible`: Optional boolean for initial visibility (default: true)
+  - Returns: Window object with terminal-like methods
+  - Example:
+    ```lua
+    local myWindow = window.create(term.current(), 1, 1, 20, 5)
+    ```
+
+### Window Methods
+
+All standard terminal methods are available on window objects, plus:
+
+#### Visibility Control
+- **`window.setVisible(visible)`**
+  - Shows or hides the window
+  - Parameter: Boolean visibility state
+  - Hidden windows don't render but maintain their content buffer
+
+- **`window.isVisible()`**
+  - Returns: Boolean indicating if window is visible
+
+#### Positioning and Sizing
+- **`window.reposition(x, y [, width, height [, parent]])`**
+  - Moves and/or resizes the window
+  - Parameters:
+    - `x, y`: New position within parent
+    - `width, height`: Optional new dimensions
+    - `parent`: Optional new parent terminal
+  - Fires `term_resize` event if size changes
+  - Example:
+    ```lua
+    myWindow.reposition(5, 5, 30, 10)  -- Move and resize
+    ```
+
+- **`window.getPosition()`**
+  - Returns: x, y, width, height of the window
+
+#### Line Management
+- **`window.getLine(y)`**
+  - Gets content of a specific line
+  - Parameter: Line number (1-based)
+  - Returns: text, textColor, backgroundColor strings for the line
+  - Useful for saving/restoring window state
+
+#### Cursor Management
+- **`window.restoreCursor()`**
+  - Restores cursor position and blink state to parent terminal
+  - Useful after switching between windows
+
+### Window Features and Best Practices
+
+#### Content Buffering
+- Windows maintain a memory buffer of all rendered content
+- Buffer persists even when window is hidden
+- Allows efficient show/hide without redrawing
+
+#### Window Overlapping
+- Multiple windows can overlap on same parent terminal
+- Render order determined by which window is written to last
+- Use visibility control to manage complex UIs
+
+#### UI Panel Example
+```lua
+-- Create a dialog box
+local dialogWidth, dialogHeight = 40, 10
+local parentW, parentH = term.getSize()
+local dialogX = math.floor((parentW - dialogWidth) / 2) + 1
+local dialogY = math.floor((parentH - dialogHeight) / 2) + 1
+
+local dialog = window.create(term.current(), dialogX, dialogY, dialogWidth, dialogHeight)
+dialog.setBackgroundColor(colors.gray)
+dialog.clear()
+dialog.setTextColor(colors.white)
+dialog.setCursorPos(2, 2)
+dialog.write("Dialog Title")
+```
+
+#### Mobile-Optimized Layout Example
+```lua
+-- Create a mobile-friendly layout with header, content, and footer
+local w, h = term.getSize()
+local header = window.create(term.current(), 1, 1, w, 3)
+local content = window.create(term.current(), 1, 4, w, h - 6)
+local footer = window.create(term.current(), 1, h - 2, w, 3)
+
+-- Style each section
+header.setBackgroundColor(colors.blue)
+header.clear()
+header.setTextColor(colors.white)
+header.setCursorPos(2, 2)
+header.write("RedNet Explorer")
+
+content.setBackgroundColor(colors.black)
+content.clear()
+
+footer.setBackgroundColor(colors.gray)
+footer.clear()
+```
+
+### Performance Considerations
+- Windows use more memory than direct terminal writes
+- Each window maintains its own color palette
+- Consider reusing windows instead of creating new ones
+- Hide windows when not in use to improve rendering performance
+
+### Advanced Techniques
+1. **Window Stacking**: Create layered UIs by managing multiple overlapping windows
+2. **Animated Transitions**: Use reposition() with timers for smooth animations
+3. **Responsive Design**: Recreate windows on term_resize events
+4. **Modal Dialogs**: Use visibility control and input capture for modal behavior
+5. **Efficient Updates**: Use window buffering to prepare complex UIs off-screen
+
+### Color Constants (from colors API)
+
+The terminal functions use color constants from the `colors` API:
+- `colors.white` (1)
+- `colors.orange` (2)
+- `colors.magenta` (4)
+- `colors.lightBlue` (8)
+- `colors.yellow` (16)
+- `colors.lime` (32)
+- `colors.pink` (64)
+- `colors.gray` (128)
+- `colors.lightGray` (256)
+- `colors.cyan` (512)
+- `colors.purple` (1024)
+- `colors.blue` (2048)
+- `colors.brown` (4096)
+- `colors.green` (8192)
+- `colors.red` (16384)
+- `colors.black` (32768)
+
+### Theme Implementation Tips
+
+1. **Custom Palettes**: Use `setPaletteColour` to create theme-specific color schemes
+2. **Efficient Rendering**: Use `term.blit()` for complex colored text in one call
+3. **Window Isolation**: Use `term.redirect()` with window API for isolated rendering areas
+4. **Color Checking**: Always check `term.isColour()` before using colors
+5. **State Preservation**: Save and restore colors when switching contexts
+
+---
+
 ## Global APIs/Modules
 
 Core APIs available globally in the CC:Tweaked environment:
