@@ -1,0 +1,216 @@
+# RedNet-Explorer .gitignore
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor and IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.vim/
+.netrwhist
+
+# Claude Application Files (local settings)
+.claude/
+.claude-settings/
+claude-settings.json
+
+# Temporary Files
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Build and Distribution
+/dist/
+/build/
+*.zip
+*.tar.gz
+*.7z
+
+# Test Results
+/test-results/
+/coverage/
+*.test.log
+test-output.*
+
+# Local Development
+.env
+.env.local
+config.local.lua
+debug.lua
+dev-settings.lua
+
+# ComputerCraft Specific
+# Local computer files (when testing in MC)
+computer/
+computers/
+world/
+saves/
+
+# Runtime Generated Files
+# Website cache
+*.cache.lua
+cache/
+
+# Log files
+*.log
+logs/
+server.log
+error.log
+access.log
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+data/
+storage/
+
+# Backup files
+*.backup
+*.bak
+backups/
+*.old
+
+# Security Keys (NEVER commit these)
+*.key
+*.pem
+*.cert
+ssl/
+keys/
+certificates/
+
+# User Configuration (machine-specific)
+user-config.lua
+local-settings.lua
+personal/
+my-sites/
+
+# Package Manager (if used)
+node_modules/
+packages/
+vendor/
+
+# Documentation Build
+docs/_build/
+docs/html/
+docs/latex/
+*.pdf
+
+# Performance Testing Results
+benchmarks/
+profiling/
+performance-results/
+
+# Large Media Files
+*.nfp.large
+media/large/
+assets/videos/
+assets/audio/
+
+# Development Database Dumps
+*.dump
+*.sql
+fixtures/large/
+
+# Language Server Files
+.luarc.json
+.luacheckrc
+
+# Project Specific
+# Example sites (keep templates but not user examples)
+examples/user-generated/
+community-sites/
+
+# Server Hosting Files (when running actual servers)
+fw_servers/
+hosted-sites/
+user-content/
+
+# Search Index Files (regenerated)
+search-index/
+*.index
+indexed-content/
+
+# Network Configuration (machine specific)
+network-config.lua
+dns-cache.lua
+peer-list.lua
+
+# Development Tools Output
+lint-results.txt
+format-changes.patch
+validation-errors.log
+
+# Compiled Lua (if using bytecode compilation)
+*.luac
+
+# Archive Files
+archives/
+old-versions/
+
+# Personal Notes and TODOs
+TODO.personal
+NOTES.private
+dev-notes/
+
+# Minecraft World Files (when testing)
+*.mcworld
+world-backup/
+
+# ComputerCraft Computer Dumps
+computer-*/
+disk-*/
+
+# IDE Project Files
+.project
+.settings/
+.classpath
+.buildpath
+
+# OS Generated
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Windows
+desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon
+.DocumentRevisions-V100
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# End of .gitignore

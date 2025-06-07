@@ -2,6 +2,24 @@
 
 **Base URL:** https://tweaked.cc/
 
+## 🚨 CRITICAL DEVELOPMENT REQUIREMENTS 🚨
+
+### **1. Always Check Official Documentation**
+**NEVER implement CC:Tweaked functionality without consulting the official docs first.**
+
+### **2. Lua Version Compatibility** 
+**CC:Tweaked uses Lua 5.2 with select Lua 5.3 features.**
+- **Compatibility Guide**: https://tweaked.cc/reference/feature_compat.html
+- **MUST VERIFY** any advanced Lua syntax before using
+- **Available Lua 5.3 features**: UTF-8 basics, integer division (//), bitwise operators (&, |, ~, <<, >>)
+- **NOT available**: Full UTF-8 library, some string patterns, certain metamethods
+
+### **3. Breaking Changes Awareness**
+- **Version Differences**: https://tweaked.cc/reference/breaking_changes.html
+- **Check compatibility** when targeting specific CC:Tweaked versions
+
+---
+
 This comprehensive reference covers all documentation pages for CC:Tweaked, a mod for Minecraft that adds programmable computers, turtles, and peripherals. The documentation is organized into several main categories.
 
 ## Global APIs/Modules
@@ -209,3 +227,17 @@ Technical reference materials and compatibility information:
 ---
 
 *This reference covers the complete CC:Tweaked documentation as available on https://tweaked.cc/. Each link provides detailed information about APIs, functions, events, and usage examples for programming computers and turtles in Minecraft.*
+
+## 🚨 CRITICAL DEVELOPMENT REQUIREMENT 🚨
+
+**ALWAYS consult the official CC:Tweaked documentation at https://tweaked.cc/ before implementing any CC:Tweaked functionality.**
+
+When working with any CC:Tweaked API, event, peripheral, or feature:
+
+1. **Check the official documentation URL** listed above for that specific component
+2. **Verify function signatures, parameters, and return values** against the official docs
+3. **Review usage examples** provided in the documentation
+4. **Check for version compatibility** and breaking changes
+5. **Follow official best practices** and conventions
+
+This ensures code compatibility, correctness, and adherence to CC:Tweaked standards.
