@@ -1,0 +1,27 @@
+#!/usr/bin/env lua
+-- RedNet-Explorer Development Portal CLI
+-- Run development tools from the command line
+
+-- Add source directory to path
+package.path = package.path .. ";src/?.lua;src/?/init.lua"
+
+-- Load dev portal module
+local devPortal = require("builtin.dev-portal")
+
+-- Get command line arguments
+local args = {...}
+local command = args[1] or "help"
+
+-- Remove command from args
+table.remove(args, 1)
+
+-- Run the appropriate command
+if command == "edit" then
+    devPortal.runTerminal("edit", unpack(args))
+elseif command == "browse" then
+    devPortal.runTerminal("browse", unpack(args))
+elseif command == "preview" then
+    devPortal.runTerminal("preview", unpack(args))
+else
+    devPortal.runTerminal("help")
+end
