@@ -3,14 +3,14 @@
 
 local handler = {}
 
+-- Load sandbox module
+local sandbox = require("src.content.sandbox")
+
 -- Configuration
 local config = {
-    scriptTimeout = 5,
+    scriptTimeout = 5000,  -- 5 seconds in milliseconds
     maxOutputSize = 100000,
-    enableSandbox = true,
-    allowedAPIs = {
-        "math", "string", "table", "os", "textutils"
-    }
+    enableSandbox = true
 }
 
 -- Initialize handler
@@ -41,48 +41,37 @@ function handler.executeLua(scriptPath, request)
     local scriptContent = file.readAll()
     file.close()
     
-    -- Create sandbox environment
-    local env = handler.createSandbox(request)
-    
-    -- Load script
-    local script, err = load(scriptContent, scriptPath, "t", env)
-    if not script then
-        return nil, "Script error: " .. err
-    end
-    
-    -- Capture output
-    local output = {}
-    env.print = function(...)
-        local args = {...}
-        for i, v in ipairs(args) do
-            table.insert(output, tostring(v))
-            if i < #args then
-                table.insert(output, "\t")
-            end
+    if config.enableSandbox then
+        -- Use secure sandbox
+        local sb = sandbox.new()
+        sb:addWebAPIs()
+        
+        -- Set request context
+        sb:setRequest({
+            method = request.method,
+            url = request.url,
+            headers = request.headers,
+            params = request.params,
+            cookies = request.cookies,
+            body = request.body
+        })
+        
+        -- Execute script
+        local success, result = sb:executeWithTimeout(scriptContent, config.scriptTimeout)
+        
+        if not success then
+            return nil, "Script error: " .. tostring(result)
         end
-        table.insert(output, "\n")
+        
+        -- Get response
+        local response = sb:getResponse()
+        
+        -- Return output and response data
+        return response.body, nil, response
+    else
+        -- Legacy non-sandboxed execution (not recommended)
+        return handler.executeLuaUnsafe(scriptContent, request)
     end
-    
-    env.write = function(text)
-        table.insert(output, tostring(text))
-    end
-    
-    -- Execute with timeout
-    local success, result = handler.executeWithTimeout(script, config.scriptTimeout)
-    
-    if not success then
-        return nil, "Script error: " .. tostring(result)
-    end
-    
-    -- Get output
-    local outputText = table.concat(output)
-    
-    -- Check output size
-    if #outputText > config.maxOutputSize then
-        return nil, "Output too large"
-    end
-    
-    return outputText
 end
 
 -- Create sandboxed environment

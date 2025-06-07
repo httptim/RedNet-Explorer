@@ -289,11 +289,14 @@ function server.handleGet(path, request, clientId, requestId)
         -- Check for Lua files that should be executed
         if contentType == "application/lua" and string.match(path, "%.lua$") then
             -- Execute Lua file
-            local output, err = requestHandler.executeLua(fullPath, request)
+            local output, err, responseData = requestHandler.executeLua(fullPath, request)
             if output then
-                server.sendResponse(clientId, 200, {
-                    ["Content-Type"] = "text/html"
-                }, output, requestId)
+                -- Use response data if available (from sandbox)
+                local status = responseData and responseData.status or 200
+                local headers = responseData and responseData.headers or {}
+                headers["Content-Type"] = headers["Content-Type"] or "text/html"
+                
+                server.sendResponse(clientId, status, headers, output, requestId)
             else
                 server.sendError(clientId, 500, "Script error: " .. err, requestId)
             end
@@ -321,11 +324,14 @@ function server.handlePost(path, request, clientId, requestId)
     
     if fs.exists(fullPath) and string.match(path, "%.lua$") then
         -- Execute Lua file with POST data
-        local output, err = requestHandler.executeLua(fullPath, request)
+        local output, err, responseData = requestHandler.executeLua(fullPath, request)
         if output then
-            server.sendResponse(clientId, 200, {
-                ["Content-Type"] = "text/html"
-            }, output, requestId)
+            -- Use response data if available (from sandbox)
+            local status = responseData and responseData.status or 200
+            local headers = responseData and responseData.headers or {}
+            headers["Content-Type"] = headers["Content-Type"] or "text/html"
+            
+            server.sendResponse(clientId, status, headers, output, requestId)
         else
             server.sendError(clientId, 500, "Script error: " .. err, requestId)
         end
