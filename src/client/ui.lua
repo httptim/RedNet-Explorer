@@ -3,28 +3,20 @@
 
 local ui = {}
 
+-- Load dependencies
+local themeManager = require("src.ui.theme_manager")
+
 -- UI configuration
 ui.CONFIG = {
-    -- Colors
-    colors = {
-        background = colors.black,
-        text = colors.white,
-        titleBar = colors.red,
-        titleText = colors.white,
-        statusBar = colors.gray,
-        statusText = colors.white,
-        addressBar = colors.lightGray,
-        addressText = colors.black,
-        link = colors.blue,
-        error = colors.red,
-        success = colors.green
-    },
-    
     -- Layout
     titleHeight = 1,
     addressHeight = 1,
     statusHeight = 1,
-    menuWidth = 20
+    menuWidth = 20,
+    
+    -- Features
+    useThemes = true,
+    animations = true
 }
 
 -- UI state
@@ -49,6 +41,11 @@ function ui.init(config)
         end
     end
     
+    -- Initialize theme manager
+    if ui.CONFIG.useThemes then
+        themeManager.init()
+    end
+    
     -- Get terminal size
     state.width, state.height = term.getSize()
     
@@ -56,16 +53,18 @@ function ui.init(config)
     state.contentTop = ui.CONFIG.titleHeight + ui.CONFIG.addressHeight + 1
     state.contentBottom = state.height - ui.CONFIG.statusHeight
     
-    -- Set initial colors
-    term.setBackgroundColor(ui.CONFIG.colors.background)
-    term.setTextColor(ui.CONFIG.colors.text)
+    -- Set initial colors from theme
+    local colors = themeManager.getColors()
+    term.setBackgroundColor(colors.background)
+    term.setTextColor(colors.text)
     
     return true
 end
 
 -- Clear screen
 function ui.clear()
-    term.setBackgroundColor(ui.CONFIG.colors.background)
+    local colors = themeManager.getColors()
+    term.setBackgroundColor(colors.background)
     term.clear()
     term.setCursorPos(1, 1)
 end
@@ -79,9 +78,10 @@ end
 
 -- Draw title bar
 function ui.drawTitleBar()
+    local colors = themeManager.getColors()
     term.setCursorPos(1, 1)
-    term.setBackgroundColor(ui.CONFIG.colors.titleBar)
-    term.setTextColor(ui.CONFIG.colors.titleText)
+    term.setBackgroundColor(colors.titleBar)
+    term.setTextColor(colors.titleText)
     term.clearLine()
     
     local title = "RedNet-Explorer"
@@ -91,6 +91,7 @@ function ui.drawTitleBar()
     
     -- Draw controls
     term.setCursorPos(state.width - 2, 1)
+    term.setTextColor(colors.titleControls)
     term.write("[X]")
     
     -- Register close button
@@ -106,15 +107,18 @@ end
 
 -- Draw address bar
 function ui.drawAddressBar()
+    local colors = themeManager.getColors()
     local y = ui.CONFIG.titleHeight + 1
     
     term.setCursorPos(1, y)
-    term.setBackgroundColor(ui.CONFIG.colors.addressBar)
-    term.setTextColor(ui.CONFIG.colors.addressText)
+    term.setBackgroundColor(colors.addressBar)
+    term.setTextColor(colors.addressText)
     term.clearLine()
     
     -- Draw navigation buttons
     term.setCursorPos(2, y)
+    term.setBackgroundColor(colors.addressButton)
+    term.setTextColor(colors.addressButtonText)
     term.write("[<] [>] [R] [H]")
     
     -- Register navigation buttons
@@ -152,11 +156,12 @@ end
 
 -- Draw status bar
 function ui.drawStatusBar()
+    local colors = themeManager.getColors()
     local y = state.height
     
     term.setCursorPos(1, y)
-    term.setBackgroundColor(ui.CONFIG.colors.statusBar)
-    term.setTextColor(ui.CONFIG.colors.statusText)
+    term.setBackgroundColor(colors.statusBar)
+    term.setTextColor(colors.statusText)
     term.clearLine()
     
     -- Draw status text
@@ -167,6 +172,7 @@ function ui.drawStatusBar()
     if state.loading then
         local indicator = string.rep(".", (os.epoch("utc") / 500) % 4)
         term.setCursorPos(state.width - 10, y)
+        term.setTextColor(colors.statusLoading)
         term.write("Loading" .. indicator)
     end
     
@@ -186,8 +192,9 @@ end
 
 -- Clear content area
 function ui.clearContent()
-    term.setBackgroundColor(ui.CONFIG.colors.background)
-    term.setTextColor(ui.CONFIG.colors.text)
+    local colors = themeManager.getColors()
+    term.setBackgroundColor(colors.contentBackground)
+    term.setTextColor(colors.contentText)
     
     for y = state.contentTop, state.contentBottom do
         term.setCursorPos(1, y)
@@ -240,12 +247,13 @@ end
 
 -- Focus address bar
 function ui.focusAddressBar()
+    local colors = themeManager.getColors()
     state.focusedElement = "addressBar"
     
     -- Show input prompt
     term.setCursorPos(19, ui.CONFIG.titleHeight + 1)
-    term.setBackgroundColor(ui.CONFIG.colors.addressBar)
-    term.setTextColor(ui.CONFIG.colors.addressText)
+    term.setBackgroundColor(colors.addressBar)
+    term.setTextColor(colors.addressText)
     
     local input = read(nil, nil, function(text)
         return {} -- No autocomplete for now
@@ -263,11 +271,12 @@ end
 
 -- Focus input element
 function ui.focusInput(element)
+    local colors = themeManager.getColors()
     state.focusedElement = element.id
     
     term.setCursorPos(element.x + 1, element.y)
-    term.setBackgroundColor(ui.CONFIG.colors.addressBar)
-    term.setTextColor(ui.CONFIG.colors.addressText)
+    term.setBackgroundColor(colors.inputBackground)
+    term.setTextColor(colors.inputText)
     
     local input = read(element.value)
     
@@ -283,12 +292,13 @@ end
 
 -- Show menu
 function ui.showMenu(options)
+    local colors = themeManager.getColors()
     local menuX = math.floor((state.width - ui.CONFIG.menuWidth) / 2)
     local menuY = math.floor((state.height - #options - 2) / 2)
     
     -- Draw menu background
-    term.setBackgroundColor(ui.CONFIG.colors.statusBar)
-    term.setTextColor(ui.CONFIG.colors.statusText)
+    term.setBackgroundColor(colors.menuBackground)
+    term.setTextColor(colors.menuText)
     
     for y = menuY, menuY + #options + 1 do
         term.setCursorPos(menuX, y)
@@ -320,11 +330,12 @@ end
 
 -- Show prompt
 function ui.prompt(message, default)
+    local colors = themeManager.getColors()
     local promptY = math.floor(state.height / 2)
     
     term.setCursorPos(2, promptY)
-    term.setBackgroundColor(ui.CONFIG.colors.background)
-    term.setTextColor(ui.CONFIG.colors.text)
+    term.setBackgroundColor(colors.background)
+    term.setTextColor(colors.text)
     term.clearLine()
     term.write(message .. " ")
     
@@ -355,17 +366,19 @@ end
 
 -- Write text with color
 function ui.writeColored(text, textColor, bgColor)
+    local colors = themeManager.getColors()
     if textColor then term.setTextColor(textColor) end
     if bgColor then term.setBackgroundColor(bgColor) end
     term.write(text)
-    term.setTextColor(ui.CONFIG.colors.text)
-    term.setBackgroundColor(ui.CONFIG.colors.background)
+    term.setTextColor(colors.text)
+    term.setBackgroundColor(colors.background)
 end
 
 -- Draw a link
 function ui.drawLink(text, url, x, y)
+    local colors = themeManager.getColors()
     term.setCursorPos(x, y)
-    ui.writeColored(text, ui.CONFIG.colors.link)
+    ui.writeColored(text, colors.link)
     
     ui.registerElement({
         type = "link",
@@ -400,6 +413,86 @@ function ui.cleanup()
     term.setTextColor(colors.white)
     term.clear()
     term.setCursorPos(1, 1)
+end
+
+-- Theme management functions
+
+-- Get current theme
+function ui.getCurrentTheme()
+    return themeManager.getCurrentTheme()
+end
+
+-- Set theme
+function ui.setTheme(themeId)
+    local success, err = themeManager.setTheme(themeId)
+    if success then
+        -- Redraw interface with new theme
+        ui.clear()
+        ui.drawInterface()
+        -- Notify about theme change
+        os.queueEvent("ui_theme_changed", themeId)
+    end
+    return success, err
+end
+
+-- Get available themes
+function ui.getThemes()
+    return themeManager.getThemeList()
+end
+
+-- Show theme selector
+function ui.showThemeSelector()
+    local themes = ui.getThemes()
+    local options = {}
+    local themeIds = {}
+    
+    for i, theme in ipairs(themes) do
+        local marker = theme.builtin and "" or "[C] "
+        table.insert(options, marker .. theme.name)
+        table.insert(themeIds, theme.id)
+    end
+    
+    local choice = ui.showMenu(options)
+    if choice then
+        ui.setTheme(themeIds[choice])
+    end
+end
+
+-- Preview theme temporarily
+function ui.previewTheme(themeId)
+    return themeManager.previewTheme(themeId)
+end
+
+-- Handle theme events
+function ui.handleThemeEvent(event, ...)
+    if event == "theme_changed" then
+        -- Redraw with new theme
+        ui.clear()
+        ui.drawInterface()
+    elseif event == "theme_color_changed" then
+        -- Redraw specific elements
+        ui.drawInterface()
+    end
+end
+
+-- Check color support
+function ui.supportsColor()
+    return themeManager.supportsColor()
+end
+
+-- Draw with proper color handling
+function ui.drawWithColor(drawFunc)
+    if ui.supportsColor() then
+        drawFunc()
+    else
+        -- Use monochrome fallback
+        local oldColors = themeManager.getColors()
+        -- Temporarily switch to monochrome theme
+        themeManager.setTheme("highContrast")
+        drawFunc()
+        -- Restore previous theme
+        themeManager.setTheme(oldColors)
+    end
 end
 
 return ui
