@@ -1,0 +1,21 @@
+<rwml version="1.0">
+  <head>
+    <title>Hello World - RedNet Explorer</title>
+    <meta name="description" content="A simple hello world example in RWML" />
+    <meta name="author" content="RedNet Explorer Team" />
+  </head>
+  <body>
+    <h1 color="lime">Hello, RedNet World!</h1>
+    
+    <p>Welcome to your first RWML page. This demonstrates the basic structure of an RWML document.</p>
+    
+    <hr color="gray" />
+    
+    <p>RWML (RedNet Website Markup Language) is designed specifically for CC:Tweaked terminals, providing a familiar HTML-like syntax while respecting the constraints of text-mode displays.</p>
+    
+    <p align="center">
+      <link url="/examples" color="blue">View More Examples</link> | 
+      <link url="/" color="blue">Home</link>
+    </p>
+  </body>
+</rwml>

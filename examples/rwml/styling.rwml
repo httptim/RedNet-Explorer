@@ -1,0 +1,111 @@
+<rwml version="1.0">
+  <head>
+    <title>Styling and Colors Example</title>
+    <meta name="description" content="Demonstrates RWML styling capabilities" />
+  </head>
+  <body>
+    <h1 color="lime" align="center">RWML Styling Examples</h1>
+    
+    <h2>Text Colors</h2>
+    <p>RWML supports all 16 CC:Tweaked colors:</p>
+    <div bgcolor="black" padding="1">
+      <p color="white">White text on black background</p>
+      <p color="orange">Orange text for warnings</p>
+      <p color="magenta">Magenta text for special notes</p>
+      <p color="lightblue">Light blue for information</p>
+      <p color="yellow">Yellow for highlights</p>
+      <p color="lime">Lime for success messages</p>
+      <p color="pink">Pink for decorative text</p>
+      <p color="gray">Gray for subdued content</p>
+      <p color="lightgray">Light gray for disabled items</p>
+      <p color="cyan">Cyan for links or emphasis</p>
+      <p color="purple">Purple for royal content</p>
+      <p color="blue">Blue for standard links</p>
+      <p color="brown">Brown for earthy tones</p>
+      <p color="green">Green for positive feedback</p>
+      <p color="red">Red for errors or alerts</p>
+    </div>
+    
+    <h2>Background Colors</h2>
+    <div bgcolor="blue" color="white" padding="1" margin="1">
+      <p>White text on blue background</p>
+    </div>
+    
+    <div bgcolor="green" color="black" padding="1" margin="1">
+      <p>Black text on green background</p>
+    </div>
+    
+    <div bgcolor="red" color="white" padding="1" margin="1">
+      <p>White text on red background - perfect for alerts!</p>
+    </div>
+    
+    <h2>Text Formatting</h2>
+    <p>
+      This is <b>bold text</b> for emphasis.<br />
+      This is <i>italic text</i> for style.<br />
+      This is <u>underlined text</u> for importance.<br />
+      This is <code>inline code</code> for technical content.
+    </p>
+    
+    <h2>Mixed Styling</h2>
+    <p>
+      You can <span color="red">mix</span> <span color="blue">different</span> 
+      <span color="green">colors</span> within a single paragraph using 
+      <span bgcolor="yellow" color="black">inline spans</span>.
+    </p>
+    
+    <h2>Alignment Examples</h2>
+    <p align="left">This text is left-aligned (default).</p>
+    <p align="center">This text is center-aligned.</p>
+    <p align="right">This text is right-aligned.</p>
+    
+    <h2>Preformatted Text</h2>
+    <pre bgcolor="gray" color="white">
+    function hello()
+        print("Hello, World!")
+    end
+    
+    -- This preserves    spacing
+    -- And line breaks exactly as written
+    </pre>
+    
+    <h2>Lists with Colors</h2>
+    <ul>
+      <li color="green">✓ Completed task</li>
+      <li color="yellow">⚠ In progress task</li>
+      <li color="red">✗ Failed task</li>
+      <li color="gray">◯ Pending task</li>
+    </ul>
+    
+    <h2>Styled Boxes</h2>
+    <div bgcolor="lightblue" color="black" padding="2" margin="1">
+      <h3 color="blue">Information Box</h3>
+      <p>This is an information box with a light blue background. It's perfect for displaying helpful tips or additional information.</p>
+    </div>
+    
+    <div bgcolor="yellow" color="black" padding="2" margin="1">
+      <h3>Warning Box</h3>
+      <p><b>Warning:</b> This styled box draws attention to important warnings or cautions that users should be aware of.</p>
+    </div>
+    
+    <div bgcolor="lightgray" color="black" padding="2" margin="1">
+      <h3>Code Example Box</h3>
+      <code>
+        -- Example Lua code<br />
+        local x = 10<br />
+        local y = 20<br />
+        print(x + y)
+      </code>
+    </div>
+    
+    <h2>Horizontal Rules</h2>
+    <p>Default horizontal rule:</p>
+    <hr />
+    
+    <p>Colored horizontal rule:</p>
+    <hr color="blue" />
+    
+    <p>Custom width rule:</p>
+    <hr color="red" width="50%" />
+  </body>
+</rwml>

@@ -1,0 +1,109 @@
+<rwml version="1.0">
+  <head>
+    <title>RWML Examples Index</title>
+    <meta name="description" content="Collection of RWML examples for RedNet-Explorer" />
+  </head>
+  <body bgcolor="black" color="white">
+    <h1 color="lime" align="center">RWML Examples</h1>
+    
+    <p align="center">
+      Welcome to the RWML example collection. These examples demonstrate
+      various features and capabilities of the RedNet Website Markup Language.
+    </p>
+    
+    <hr color="gray" />
+    
+    <h2 color="yellow">Available Examples</h2>
+    
+    <div bgcolor="gray" color="white" padding="1" margin="1">
+      <h3>Basic Examples</h3>
+      <p>→ <link url="/examples/rwml/hello-world.rwml" color="cyan">Hello World</link> - Basic RWML structure</p>
+      <p>→ <link url="/examples/rwml/styling.rwml" color="cyan">Styling & Colors</link> - Text formatting and colors</p>
+    </div>
+    
+    <div bgcolor="gray" color="white" padding="1" margin="1">
+      <h3>Layout Examples</h3>
+      <p>→ <link url="/examples/rwml/navigation-menu.rwml" color="cyan">Navigation Menus</link> - Various menu styles</p>
+      <p>→ <link url="/examples/rwml/tables.rwml" color="cyan">Tables</link> - Table layouts and data display</p>
+    </div>
+    
+    <div bgcolor="gray" color="white" padding="1" margin="1">
+      <h3>Interactive Examples</h3>
+      <p>→ <link url="/examples/rwml/forms.rwml" color="cyan">Forms</link> - Input elements and form handling</p>
+    </div>
+    
+    <h2 color="yellow">Quick Reference</h2>
+    
+    <h3>Basic Structure</h3>
+    <pre bgcolor="lightgray" color="black">
+&lt;rwml version="1.0"&gt;
+  &lt;head&gt;
+    &lt;title&gt;Page Title&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;!-- Content here --&gt;
+  &lt;/body&gt;
+&lt;/rwml&gt;</pre>
+    
+    <h3>Common Elements</h3>
+    <table border="1" width="100%">
+      <tr bgcolor="blue" color="white">
+        <th>Element</th>
+        <th>Purpose</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td><code>&lt;h1&gt;-&lt;h6&gt;</code></td>
+        <td>Headings</td>
+        <td><code>&lt;h1&gt;Title&lt;/h1&gt;</code></td>
+      </tr>
+      <tr bgcolor="lightgray">
+        <td><code>&lt;p&gt;</code></td>
+        <td>Paragraph</td>
+        <td><code>&lt;p&gt;Text&lt;/p&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;a&gt;, &lt;link&gt;</code></td>
+        <td>Hyperlink</td>
+        <td><code>&lt;a href="/page"&gt;Link&lt;/a&gt;</code></td>
+      </tr>
+      <tr bgcolor="lightgray">
+        <td><code>&lt;div&gt;</code></td>
+        <td>Container</td>
+        <td><code>&lt;div bgcolor="blue"&gt;&lt;/div&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;span&gt;</code></td>
+        <td>Inline container</td>
+        <td><code>&lt;span color="red"&gt;text&lt;/span&gt;</code></td>
+      </tr>
+    </table>
+    
+    <h3>Colors</h3>
+    <p>Available colors: 
+      <span color="white">white</span>, 
+      <span color="orange">orange</span>, 
+      <span color="magenta">magenta</span>, 
+      <span color="lightblue">lightblue</span>, 
+      <span color="yellow">yellow</span>, 
+      <span color="lime">lime</span>, 
+      <span color="pink">pink</span>, 
+      <span color="gray">gray</span>, 
+      <span color="lightgray">lightgray</span>, 
+      <span color="cyan">cyan</span>, 
+      <span color="purple">purple</span>, 
+      <span color="blue">blue</span>, 
+      <span color="brown">brown</span>, 
+      <span color="green">green</span>, 
+      <span color="red">red</span>, 
+      <span bgcolor="white" color="black">black</span>
+    </p>
+    
+    <hr color="gray" />
+    
+    <p align="center">
+      <link url="/docs/rwml-spec.md" color="yellow">📖 Full RWML Specification</link> | 
+      <link url="/" color="yellow">🏠 Home</link>
+    </p>
+  </body>
+</rwml>

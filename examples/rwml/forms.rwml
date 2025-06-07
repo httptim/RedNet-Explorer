@@ -1,0 +1,126 @@
+<rwml version="1.0">
+  <head>
+    <title>Form Examples</title>
+    <meta name="description" content="Various form examples in RWML" />
+  </head>
+  <body>
+    <h1 color="blue">RWML Form Examples</h1>
+    
+    <h2>Login Form</h2>
+    <div bgcolor="lightgray" color="black" padding="2" margin="1">
+      <form action="/login" method="post">
+        <h3>User Login</h3>
+        <p>
+          Username:<br />
+          <input type="text" name="username" size="20" placeholder="Enter username" required />
+        </p>
+        <p>
+          Password:<br />
+          <input type="password" name="password" size="20" required />
+        </p>
+        <p>
+          <input type="checkbox" name="remember" value="1" /> Remember me
+        </p>
+        <p>
+          <button type="submit" bgcolor="green" color="white">Login</button>
+          <button type="reset">Clear</button>
+        </p>
+      </form>
+    </div>
+    
+    <h2>Contact Form</h2>
+    <form action="/contact" method="post">
+      <table width="100%">
+        <tr>
+          <td>Name:</td>
+          <td><input type="text" name="name" size="30" required /></td>
+        </tr>
+        <tr>
+          <td>Email:</td>
+          <td><input type="text" name="email" size="30" placeholder="user@example.com" required /></td>
+        </tr>
+        <tr>
+          <td>Subject:</td>
+          <td>
+            <select name="subject">
+              <option value="">Select a subject...</option>
+              <option value="support">Technical Support</option>
+              <option value="sales">Sales Inquiry</option>
+              <option value="feedback">General Feedback</option>
+              <option value="bug">Bug Report</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Message:</td>
+          <td><textarea name="message" rows="5" cols="30" required></textarea></td>
+        </tr>
+        <tr>
+          <td>Priority:</td>
+          <td>
+            <input type="radio" name="priority" value="low" /> Low
+            <input type="radio" name="priority" value="normal" checked /> Normal
+            <input type="radio" name="priority" value="high" /> High
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <button type="submit" bgcolor="blue" color="white">Send Message</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+    
+    <h2>Settings Form</h2>
+    <div bgcolor="black" color="white" padding="1">
+      <form action="/settings" method="post">
+        <h3 color="yellow">User Preferences</h3>
+        
+        <p><b>Display Options:</b></p>
+        <p>
+          Theme: 
+          <select name="theme">
+            <option value="light">Light</option>
+            <option value="dark" selected>Dark</option>
+            <option value="auto">Auto</option>
+          </select>
+        </p>
+        
+        <p><b>Notification Settings:</b></p>
+        <p>
+          <input type="checkbox" name="notify_messages" value="1" checked /> Private Messages<br />
+          <input type="checkbox" name="notify_mentions" value="1" checked /> Mentions<br />
+          <input type="checkbox" name="notify_updates" value="1" /> System Updates
+        </p>
+        
+        <p><b>Privacy:</b></p>
+        <p>
+          Profile Visibility:
+          <input type="radio" name="visibility" value="public" /> Public
+          <input type="radio" name="visibility" value="friends" checked /> Friends Only
+          <input type="radio" name="visibility" value="private" /> Private
+        </p>
+        
+        <p align="center">
+          <button type="submit" bgcolor="green" color="white">Save Settings</button>
+          <button type="button" bgcolor="red" color="white">Cancel</button>
+        </p>
+      </form>
+    </div>
+    
+    <h2>Search Form</h2>
+    <div align="center">
+      <form action="/search" method="get">
+        <p>
+          <input type="text" name="q" size="40" placeholder="Search RedNet..." />
+          <button type="submit" bgcolor="blue" color="white">Search</button>
+        </p>
+        <p>
+          <input type="checkbox" name="titles" value="1" checked /> Search in titles
+          <input type="checkbox" name="content" value="1" checked /> Search in content
+        </p>
+      </form>
+    </div>
+  </body>
+</rwml>

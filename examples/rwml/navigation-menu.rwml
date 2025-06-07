@@ -1,0 +1,60 @@
+<rwml version="1.0">
+  <head>
+    <title>Navigation Menu Example</title>
+    <meta name="description" content="Examples of navigation menus in RWML" />
+  </head>
+  <body bgcolor="black" color="white">
+    <!-- Top Navigation Bar -->
+    <div bgcolor="blue" color="white" padding="1">
+      <span>[</span>
+      <link url="/" color="yellow">Home</link>
+      <span>] [</span>
+      <link url="/about" color="yellow">About</link>
+      <span>] [</span>
+      <link url="/services" color="yellow">Services</link>
+      <span>] [</span>
+      <link url="/contact" color="yellow">Contact</link>
+      <span>]</span>
+    </div>
+    
+    <h1>Navigation Examples</h1>
+    
+    <h2>Horizontal Menu</h2>
+    <div bgcolor="gray" color="white">
+      <p align="center">
+        <a href="/" color="cyan">Home</a> • 
+        <a href="/products" color="cyan">Products</a> • 
+        <a href="/blog" color="cyan">Blog</a> • 
+        <a href="/support" color="cyan">Support</a>
+      </p>
+    </div>
+    
+    <h2>Vertical Menu</h2>
+    <div bgcolor="lightgray" color="black" width="20" padding="1">
+      <p><b>Main Menu</b></p>
+      <p>→ <link url="/dashboard">Dashboard</link></p>
+      <p>→ <link url="/profile">Profile</link></p>
+      <p>→ <link url="/settings">Settings</link></p>
+      <p>→ <link url="/logout">Logout</link></p>
+    </div>
+    
+    <h2>Breadcrumb Navigation</h2>
+    <p color="gray">
+      <link url="/">Home</link> › 
+      <link url="/docs">Documentation</link> › 
+      <link url="/docs/rwml">RWML</link> › 
+      <span color="white">Navigation</span>
+    </p>
+    
+    <h2>Tab-Style Navigation</h2>
+    <div>
+      <span bgcolor="yellow" color="black"> Overview </span>
+      <span bgcolor="gray" color="white"> <link url="/features" color="white">Features</link> </span>
+      <span bgcolor="gray" color="white"> <link url="/pricing" color="white">Pricing</link> </span>
+      <span bgcolor="gray" color="white"> <link url="/faq" color="white">FAQ</link> </span>
+    </div>
+    <div bgcolor="yellow" color="black" padding="1">
+      <p>This is the overview tab content. Click other tabs to navigate.</p>
+    </div>
+  </body>
+</rwml>

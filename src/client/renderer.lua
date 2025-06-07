@@ -5,6 +5,7 @@ local renderer = {}
 
 -- Load dependencies
 local ui = require("src.client.ui")
+local rwml = require("src.content.rwml")
 
 -- Renderer configuration
 renderer.CONFIG = {
@@ -46,193 +47,63 @@ end
 function renderer.renderRWML(content)
     renderer.init()
     
-    -- Parse RWML content
-    local elements = renderer.parseRWML(content)
+    -- Use the new RWML renderer
+    local success, result = rwml.render(content, term, {
+        renderOnError = true  -- Try to render even with errors
+    })
     
-    -- Render elements
-    for _, element in ipairs(elements) do
-        renderer.renderRWMLElement(element)
+    if success then
+        -- Store the RWML renderer instance
+        state.rwmlRenderer = result.renderer
+        
+        -- Store links and forms from RWML renderer
+        state.links = result.links or {}
+        state.forms = result.forms or {}
+        
+        -- Store page metadata
+        if result.metadata then
+            state.pageTitle = result.metadata.title
+            state.pageAuthor = result.metadata.author
+            state.pageDescription = result.metadata.description
+        end
+        
+        -- Handle any warnings
+        if result.warnings and #result.warnings > 0 then
+            for _, warning in ipairs(result.warnings) do
+                ui.setStatus("Warning: " .. warning.message, colors.yellow)
+            end
+        end
+        
+        -- Update scroll indicators
+        renderer.updateScrollIndicators()
+    else
+        -- Render error page
+        renderer.renderError("Failed to parse RWML content", nil)
+        
+        -- Show specific errors
+        if result then
+            for _, error in ipairs(result) do
+                renderer.addText(rwml.formatError(error), {color = colors.red})
+                renderer.newLine()
+            end
+        end
     end
-    
-    -- Display rendered content
-    renderer.display()
 end
 
--- Parse RWML into elements
-function renderer.parseRWML(content)
-    local elements = {}
-    local stack = {}
-    
-    -- Simple RWML parser (basic implementation)
-    -- In a full implementation, this would be more robust
-    
-    -- Split content into lines for simple parsing
-    for line in string.gmatch(content .. "\n", "(.-)\n") do
-        -- Check for tags
-        local tagPattern = "<(%/?)(%w+)([^>]*)>"
-        local lastPos = 1
-        
-        while true do
-            local startPos, endPos, closing, tag, attrs = string.find(line, tagPattern, lastPos)
-            
-            if not startPos then
-                -- No more tags, add remaining text
-                local text = string.sub(line, lastPos)
-                if text ~= "" then
-                    table.insert(elements, {
-                        type = "text",
-                        content = text
-                    })
-                end
-                break
-            end
-            
-            -- Add text before tag
-            local text = string.sub(line, lastPos, startPos - 1)
-            if text ~= "" then
-                table.insert(elements, {
-                    type = "text",
-                    content = text
-                })
-            end
-            
-            -- Process tag
-            if closing == "/" then
-                -- Closing tag
-                table.insert(elements, {
-                    type = "close",
-                    tag = tag
-                })
-            else
-                -- Opening tag
-                local element = {
-                    type = "open",
-                    tag = tag,
-                    attributes = renderer.parseAttributes(attrs)
-                }
-                table.insert(elements, element)
-            end
-            
-            lastPos = endPos + 1
-        end
-        
-        -- Add line break
-        table.insert(elements, {
-            type = "text",
-            content = "\n"
-        })
+-- Handle RWML scrolling
+function renderer.handleRWMLScroll(direction)
+    if state.rwmlRenderer then
+        state.rwmlRenderer:scroll(direction)
+        renderer.updateScrollIndicators()
     end
-    
-    return elements
 end
 
--- Parse tag attributes
-function renderer.parseAttributes(attrString)
-    local attrs = {}
-    
-    -- Simple attribute parser
-    for name, value in string.gmatch(attrString, '(%w+)="([^"]*)"') do
-        attrs[name] = value
+-- Get RWML scroll info
+function renderer.getRWMLScrollInfo()
+    if state.rwmlRenderer then
+        return state.rwmlRenderer:getScrollInfo()
     end
-    
-    for name, value in string.gmatch(attrString, "(%w+)='([^']*)'") do
-        attrs[name] = value
-    end
-    
-    for name in string.gmatch(attrString, '(%w+)') do
-        if not attrs[name] then
-            attrs[name] = true
-        end
-    end
-    
-    return attrs
-end
-
--- Render RWML element
-function renderer.renderRWMLElement(element, context)
-    context = context or {
-        color = colors.white,
-        bgcolor = colors.black,
-        style = {}
-    }
-    
-    if element.type == "text" then
-        renderer.addText(element.content, context)
-        
-    elseif element.type == "open" then
-        local tag = string.lower(element.tag)
-        
-        if tag == "br" then
-            renderer.newLine()
-            
-        elseif tag == "p" then
-            renderer.newLine()
-            renderer.newLine()
-            
-        elseif tag == "center" then
-            context.style.center = true
-            
-        elseif tag == "link" or tag == "a" then
-            context.style.link = true
-            context.linkUrl = element.attributes.href or element.attributes.url
-            context.color = colors.blue
-            
-        elseif tag == "color" then
-            local colorName = element.attributes.value or element.attributes.color
-            if colors[colorName] then
-                context.color = colors[colorName]
-            end
-            
-        elseif tag == "bg" then
-            local colorName = element.attributes.value or element.attributes.color
-            if colors[colorName] then
-                context.bgcolor = colors[colorName]
-            end
-            
-        elseif tag == "h1" or tag == "h2" or tag == "h3" then
-            renderer.newLine()
-            context.style.header = true
-            context.color = colors.yellow
-            
-        elseif tag == "hr" then
-            renderer.addHorizontalRule()
-            
-        elseif tag == "code" then
-            context.style.code = true
-            context.bgcolor = colors.gray
-            
-        elseif tag == "img" then
-            renderer.addImage(element.attributes.src, element.attributes.alt)
-        end
-        
-    elseif element.type == "close" then
-        -- Reset context based on closed tag
-        local tag = string.lower(element.tag)
-        
-        if tag == "center" then
-            context.style.center = false
-            
-        elseif tag == "link" or tag == "a" then
-            context.style.link = false
-            context.linkUrl = nil
-            context.color = colors.white
-            
-        elseif tag == "color" then
-            context.color = colors.white
-            
-        elseif tag == "bg" then
-            context.bgcolor = colors.black
-            
-        elseif tag == "h1" or tag == "h2" or tag == "h3" then
-            context.style.header = false
-            context.color = colors.white
-            renderer.newLine()
-            
-        elseif tag == "code" then
-            context.style.code = false
-            context.bgcolor = colors.black
-        end
-    end
+    return nil
 end
 
 -- Add text to content
@@ -503,48 +374,78 @@ end
 
 -- Scroll content
 function renderer.scroll(direction)
-    local dims = state.contentDimensions
-    local maxScroll = math.max(0, #state.content - dims.height)
-    
-    if direction > 0 then
-        -- Scroll down
-        state.scrollOffset = math.min(state.scrollOffset + renderer.CONFIG.scrollSpeed, maxScroll)
+    -- Check if we have an RWML renderer active
+    if state.rwmlRenderer then
+        renderer.handleRWMLScroll(direction)
     else
-        -- Scroll up
-        state.scrollOffset = math.max(state.scrollOffset - renderer.CONFIG.scrollSpeed, 0)
+        -- Original scrolling for non-RWML content
+        local dims = state.contentDimensions
+        local maxScroll = math.max(0, #state.content - dims.height)
+        
+        if direction > 0 then
+            -- Scroll down
+            state.scrollOffset = math.min(state.scrollOffset + renderer.CONFIG.scrollSpeed, maxScroll)
+        else
+            -- Scroll up
+            state.scrollOffset = math.max(state.scrollOffset - renderer.CONFIG.scrollSpeed, 0)
+        end
+        
+        -- Redisplay
+        ui.clearContent()
+        renderer.display()
     end
-    
-    -- Redisplay
-    ui.clearContent()
-    renderer.display()
 end
 
 -- Update scroll indicators
 function renderer.updateScrollIndicators()
-    local dims = state.contentDimensions
-    local maxScroll = math.max(0, #state.content - dims.height)
+    local scrollInfo = nil
+    
+    -- Get scroll info based on content type
+    if state.rwmlRenderer then
+        scrollInfo = renderer.getRWMLScrollInfo()
+    else
+        -- Original scroll info for non-RWML content
+        local dims = state.contentDimensions
+        local maxScroll = math.max(0, #state.content - dims.height)
+        if maxScroll > 0 then
+            scrollInfo = {
+                offset = state.scrollOffset,
+                maxScroll = maxScroll
+            }
+        end
+    end
     
     -- Show scroll position in status
-    if maxScroll > 0 then
-        local percent = math.floor((state.scrollOffset / maxScroll) * 100)
+    if scrollInfo and scrollInfo.maxScroll and scrollInfo.maxScroll > 0 then
+        local percent = math.floor((scrollInfo.offset / scrollInfo.maxScroll) * 100)
         ui.setStatus(string.format("Scroll: %d%%", percent))
     end
 end
 
 -- Page up
 function renderer.pageUp()
-    state.scrollOffset = math.max(0, state.scrollOffset - renderer.CONFIG.pageSize)
-    ui.clearContent()
-    renderer.display()
+    if state.rwmlRenderer then
+        state.rwmlRenderer:scroll(-renderer.CONFIG.pageSize)
+        renderer.updateScrollIndicators()
+    else
+        state.scrollOffset = math.max(0, state.scrollOffset - renderer.CONFIG.pageSize)
+        ui.clearContent()
+        renderer.display()
+    end
 end
 
 -- Page down
 function renderer.pageDown()
-    local dims = state.contentDimensions
-    local maxScroll = math.max(0, #state.content - dims.height)
-    state.scrollOffset = math.min(maxScroll, state.scrollOffset + renderer.CONFIG.pageSize)
-    ui.clearContent()
-    renderer.display()
+    if state.rwmlRenderer then
+        state.rwmlRenderer:scroll(renderer.CONFIG.pageSize)
+        renderer.updateScrollIndicators()
+    else
+        local dims = state.contentDimensions
+        local maxScroll = math.max(0, #state.content - dims.height)
+        state.scrollOffset = math.min(maxScroll, state.scrollOffset + renderer.CONFIG.pageSize)
+        ui.clearContent()
+        renderer.display()
+    end
 end
 
 return renderer
