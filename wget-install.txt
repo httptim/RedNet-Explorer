@@ -1,0 +1,32 @@
+-- RedNet-Explorer Installation Commands
+-- Copy and paste one of these commands into your CC:Tweaked computer
+
+-- Method 1: Direct GitHub Installation (Recommended)
+-- Run this command in your CC:Tweaked computer:
+
+wget run https://raw.githubusercontent.com/httptim/RedNet-Explorer/main/install.lua
+
+-- OR if wget is not available, use this longer command:
+
+lua
+local h = http.get("https://raw.githubusercontent.com/httptim/RedNet-Explorer/main/install.lua")
+if h then local c = h.readAll() h.close() loadstring(c)() else print("Download failed") end
+
+-- Method 2: Pastebin Installation (When available)
+-- Note: Pastebin code will be provided after project upload
+
+pastebin run [CODE]
+
+-- Method 3: Manual Download and Run
+-- Step 1: Download the installer
+wget https://raw.githubusercontent.com/httptim/RedNet-Explorer/main/install.lua install
+
+-- Step 2: Run the installer
+install
+
+-- After installation, you can:
+-- 1. Start the browser: rednet-explorer
+-- 2. Start a server: rednet-explorer server
+-- 3. Access admin tools: rdnt-admin
+
+-- For help: rednet-explorer help

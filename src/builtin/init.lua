@@ -8,7 +8,8 @@ local sites = {
     home = require("src.builtin.home"),
     settings = require("src.builtin.settings"),
     help = require("src.builtin.help"),
-    ["dev-portal"] = require("src.builtin.dev-portal")
+    ["dev-portal"] = require("src.builtin.dev-portal"),
+    ["google"] = require("src.builtin.google-portal")
 }
 
 -- Initialize built-in sites

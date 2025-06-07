@@ -1,0 +1,230 @@
+#!/usr/bin/env lua
+-- RedNet-Explorer Admin Dashboard Launcher
+-- Access administrative tools for managing your RedNet network
+
+-- Check environment
+if not turtle and not pocket and not term then
+    error("rdnt-admin must be run on a CC:Tweaked computer")
+end
+
+-- Add source directory to path
+local currentDir = fs.getDir(shell.getRunningProgram())
+package.path = package.path .. ";" .. currentDir .. "/?.lua"
+package.path = package.path .. ";" .. currentDir .. "/?/init.lua"
+
+-- Parse command line arguments
+local args = {...}
+local command = args[1]
+
+-- Show help
+local function showHelp()
+    print("RedNet-Explorer Admin Tools")
+    print("")
+    print("Usage: rdnt-admin [command] [options]")
+    print("")
+    print("Commands:")
+    print("  dashboard    - Open admin dashboard (default)")
+    print("  monitor      - Network monitoring only")
+    print("  moderation   - Moderation tools only")
+    print("  analytics    - Analytics viewer only")
+    print("  backup       - Backup management only")
+    print("  help         - Show this help")
+    print("")
+    print("Options:")
+    print("  --no-auth    - Skip authentication (development only)")
+    print("  --password   - Set admin password")
+    print("")
+    print("Examples:")
+    print("  rdnt-admin")
+    print("  rdnt-admin dashboard")
+    print("  rdnt-admin monitor")
+    print("  rdnt-admin backup create")
+end
+
+-- Check for admin password
+local function checkAuth()
+    local password = settings.get("rednet.admin_password")
+    if not password then
+        term.setTextColor(colors.yellow)
+        print("No admin password set!")
+        term.setTextColor(colors.white)
+        print("")
+        print("Set a password to secure admin tools:")
+        write("New password: ")
+        local newPass = read("*")
+        write("Confirm password: ")
+        local confirmPass = read("*")
+        
+        if newPass == confirmPass and #newPass > 0 then
+            settings.set("rednet.admin_password", newPass)
+            settings.save()
+            print("")
+            term.setTextColor(colors.lime)
+            print("Password set successfully!")
+            term.setTextColor(colors.white)
+            return true
+        else
+            term.setTextColor(colors.red)
+            print("Passwords don't match or empty!")
+            term.setTextColor(colors.white)
+            return false
+        end
+    end
+    return true
+end
+
+-- Launch dashboard
+local function launchDashboard(options)
+    -- Load dashboard module
+    local success, dashboard = pcall(require, "src.admin.dashboard")
+    if not success then
+        error("Failed to load admin dashboard: " .. dashboard)
+    end
+    
+    -- Initialize with options
+    local config = {
+        requireAuth = not options.noAuth,
+        enabledModules = {
+            network = true,
+            moderation = true,
+            analytics = true,
+            backup = true
+        }
+    }
+    
+    -- Override for specific modules
+    if options.module then
+        for k in pairs(config.enabledModules) do
+            config.enabledModules[k] = false
+        end
+        config.enabledModules[options.module] = true
+    end
+    
+    -- Start dashboard
+    dashboard.init(config)
+end
+
+-- Launch specific module
+local function launchModule(module)
+    local moduleMap = {
+        monitor = "network",
+        moderation = "moderation",
+        analytics = "analytics",
+        backup = "backup"
+    }
+    
+    local moduleName = moduleMap[module]
+    if not moduleName then
+        print("Unknown module: " .. module)
+        return
+    end
+    
+    launchDashboard({module = moduleName})
+end
+
+-- Handle backup commands
+local function handleBackup(subcommand)
+    local success, backup = pcall(require, "src.admin.backup")
+    if not success then
+        error("Failed to load backup module: " .. backup)
+    end
+    
+    -- Initialize backup system
+    backup.init()
+    
+    if subcommand == "create" then
+        print("Creating backup...")
+        local ok, result = backup.createBackup("manual", "Manual backup via rdnt-admin")
+        if ok then
+            print("Backup created successfully: " .. result.id)
+            print("Size: " .. (result.size / 1024) .. " KB")
+        else
+            print("Backup failed: " .. tostring(result))
+        end
+    elseif subcommand == "list" then
+        local backups = backup.listBackups()
+        print("Available backups:")
+        print("")
+        for _, b in ipairs(backups) do
+            print(string.format("%-20s %-10s %s",
+                b.id,
+                b.type,
+                os.date("%Y-%m-%d %H:%M", b.timestamp / 1000)
+            ))
+        end
+    elseif subcommand == "restore" then
+        local backupId = args[3]
+        if not backupId then
+            print("Usage: rdnt-admin backup restore <backup-id>")
+            return
+        end
+        print("Restoring backup " .. backupId .. "...")
+        local ok, err = backup.restoreBackup(backupId, {
+            createRestorePoint = true,
+            backupExisting = true
+        })
+        if ok then
+            print("Backup restored successfully!")
+        else
+            print("Restore failed: " .. tostring(err))
+        end
+    else
+        print("Backup commands:")
+        print("  rdnt-admin backup create   - Create new backup")
+        print("  rdnt-admin backup list     - List available backups")
+        print("  rdnt-admin backup restore  - Restore from backup")
+    end
+end
+
+-- Main function
+local function main()
+    -- Check authentication first
+    if not checkAuth() then
+        return
+    end
+    
+    -- Parse options
+    local options = {
+        noAuth = false
+    }
+    
+    for i = 2, #args do
+        if args[i] == "--no-auth" then
+            options.noAuth = true
+        elseif args[i] == "--password" and args[i + 1] then
+            settings.set("rednet.admin_password", args[i + 1])
+            settings.save()
+            print("Admin password updated")
+            return
+        end
+    end
+    
+    -- Handle commands
+    if not command or command == "dashboard" then
+        launchDashboard(options)
+    elseif command == "help" or command == "--help" or command == "-h" then
+        showHelp()
+    elseif command == "monitor" then
+        launchModule("monitor")
+    elseif command == "moderation" then
+        launchModule("moderation")
+    elseif command == "analytics" then
+        launchModule("analytics")
+    elseif command == "backup" then
+        handleBackup(args[2])
+    else
+        print("Unknown command: " .. command)
+        print("Run 'rdnt-admin help' for usage")
+    end
+end
+
+-- Error handling
+local success, err = pcall(main)
+if not success then
+    term.setTextColor(colors.red)
+    print("Error: " .. err)
+    term.setTextColor(colors.white)
+    print("")
+    print("Press any key to exit...")
+    os.pullEvent("key")
+end
