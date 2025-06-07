@@ -9,6 +9,7 @@ local filemanager = require("src.devtools.filemanager")
 local rwmlParser = require("src.content.rwml_parser")
 local rwmlRenderer = require("src.content.rwml_renderer")
 local sandbox = require("src.content.sandbox")
+local siteGenerator = require("src.devtools.site_generator")
 
 -- Portal state
 local state = {
@@ -34,10 +35,11 @@ function devPortal.generateMenu()
     <div padding="2">
         <h2 color="yellow">Quick Actions</h2>
         <ul>
-            <li><link url="rdnt://dev-portal/new">Create New Website</link></li>
-            <li><link url="rdnt://dev-portal/browse">Browse Files</link></li>
-            <li><link url="rdnt://dev-portal/edit">Open Editor</link></li>
-            <li><link url="rdnt://dev-portal/help">Documentation</link></li>
+            <li><link url="rdnt://dev-portal/generator">Site Generator</link> - Complete project workflow</li>
+            <li><link url="rdnt://dev-portal/new">Create New Website</link> - Quick template start</li>
+            <li><link url="rdnt://dev-portal/browse">Browse Files</link> - File manager</li>
+            <li><link url="rdnt://dev-portal/edit">Open Editor</link> - Code editor</li>
+            <li><link url="rdnt://dev-portal/help">Documentation</link> - Learn more</li>
         </ul>
         
         <h2 color="lime">Your Websites</h2>
@@ -535,6 +537,19 @@ function devPortal.handleRequest(request)
         </body>
         </rwml>]]
         
+    -- Site Generator
+    elseif path:match("/generator") then
+        -- Launch site generator in terminal mode
+        return [[<rwml version="1.0">
+        <body bgcolor="black" color="white">
+            <h1>Site Generator</h1>
+            <p>The Site Generator provides a complete workflow for creating and managing projects.</p>
+            <p>It opens in terminal mode for the best experience.</p>
+            <p>Run: <code>dev-portal generator</code></p>
+            <p><link url="rdnt://dev-portal">Back to Portal</link></p>
+        </body>
+        </rwml>]]
+        
     -- Browse files
     elseif path:match("/browse") then
         -- This would launch the file manager in terminal mode
@@ -605,6 +620,10 @@ function devPortal.runTerminal(mode, ...)
         -- Run file manager
         return filemanager.run(state.projectPath)
         
+    elseif mode == "generator" then
+        -- Run site generator
+        return siteGenerator.run()
+        
     elseif mode == "preview" then
         -- Preview a file
         local fileName = args[1]
@@ -623,6 +642,7 @@ function devPortal.runTerminal(mode, ...)
         print("RedNet-Explorer Development Portal")
         print("")
         print("Usage:")
+        print("  dev-portal generator      - Site Generator (full workflow)")
         print("  dev-portal edit [file]    - Open editor")
         print("  dev-portal browse         - Browse files")
         print("  dev-portal preview [file] - Preview file")
