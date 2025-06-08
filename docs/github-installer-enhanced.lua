@@ -215,10 +215,10 @@ local width, height = term.getSize()
 
 -- Scrolling window state
 local scrollWindow = {
-    x = 5,
-    y = 20,
-    width = width - 10,
-    height = 8,
+    x = 2,
+    y = math.min(14, height - 6),  -- Adjust based on screen size
+    width = width - 4,
+    height = math.min(6, height - 14),  -- Make it fit on screen
     lines = {},
     maxLines = 100,  -- Keep last 100 lines in memory
     scrollPos = 0
@@ -255,31 +255,42 @@ local function drawBox(x, y, w, h, title)
 end
 
 local function drawProgressBar(y, progress, label)
-    local barWidth = width - 10
-    local filled = math.floor(barWidth * progress)
-    
-    term.setCursorPos(5, y)
-    term.setTextColor(colorScheme.text)
-    term.clearLine()
-    term.write(label)
-    
-    term.setCursorPos(5, y + 1)
-    term.setTextColor(colorScheme.box)
-    term.write("[")
-    
-    term.setTextColor(colorScheme.progress)
-    term.write(string.rep("=", filled))
-    if filled < barWidth then
-        term.write(">")
-        term.setTextColor(colorScheme.box)
-        term.write(string.rep(" ", barWidth - filled - 1))
+    -- Make sure we're drawing on screen
+    if y < 1 or y > height - 1 then
+        return
     end
     
-    term.write("]")
+    local barWidth = math.min(width - 10, 40)  -- Limit bar width
+    local filled = math.floor(barWidth * progress)
     
-    term.setCursorPos(width - 6, y + 1)
+    term.setCursorPos(2, y)
     term.setTextColor(colorScheme.text)
-    term.write(string.format("%3d%%", math.floor(progress * 100)))
+    term.clearLine()
+    local shortLabel = label
+    if #label > width - 4 then
+        shortLabel = label:sub(1, width - 7) .. "..."
+    end
+    term.write(shortLabel)
+    
+    if y + 1 <= height then
+        term.setCursorPos(2, y + 1)
+        term.setTextColor(colorScheme.box)
+        term.write("[")
+        
+        term.setTextColor(colorScheme.progress)
+        term.write(string.rep("=", filled))
+        if filled < barWidth then
+            term.write(">")
+            term.setTextColor(colorScheme.box)
+            term.write(string.rep(" ", barWidth - filled - 1))
+        end
+        
+        term.write("]")
+        
+        term.setCursorPos(barWidth + 4, y + 1)
+        term.setTextColor(colorScheme.text)
+        term.write(string.format("%3d%%", math.floor(progress * 100)))
+    end
 end
 
 -- Initialize scroll window
@@ -422,17 +433,17 @@ end
 -- Show progress with animated download bar
 local function showProgress(current, total, fileInfo, fileProgress)
     local progress = current / total
-    drawProgressBar(15, progress, string.format("Overall Progress: %d/%d files", current, total))
+    local progressY = scrollWindow.y - 4  -- Position above scroll window
     
-    -- Current file indicator
-    term.setCursorPos(5, 18)
-    term.setTextColor(colorScheme.text)
-    term.clearLine()
-    local displayName = fileInfo.url
-    if #displayName > width - 15 then
-        displayName = "..." .. displayName:sub(-(width - 18))
+    if progressY >= 13 then  -- Only show if there's room
+        drawProgressBar(progressY, progress, string.format("Progress: %d/%d", current, total))
     end
-    term.write("Downloading: " .. displayName)
+    
+    -- Current file indicator in scroll window instead
+    local displayName = fileInfo.url:match("([^/]+)$") or fileInfo.url
+    if #displayName > 30 then
+        displayName = displayName:sub(1, 27) .. "..."
+    end
     
     -- Add file entry if not exists
     local status = string.format("[%3d/%3d]", current, total)
@@ -665,6 +676,19 @@ end
 
 -- Main installation
 local function install()
+    -- Check if terminal is big enough
+    if height < 19 then
+        term.clear()
+        term.setCursorPos(1, 1)
+        print("ERROR: Terminal too small!")
+        print("Need at least 19 lines")
+        print("Current size: " .. height)
+        print("")
+        print("Use an Advanced Computer")
+        print("or resize your terminal.")
+        return false
+    end
+    
     drawTitle()
     
     -- Initialize scroll window
@@ -942,9 +966,12 @@ local function main()
         -- Emergency error handling
         term.setTextColor(colors.red)
         term.setBackgroundColor(colors.black)
+        term.clear()
+        term.setCursorPos(1, 1)
+        print("INSTALLATION FAILED!")
         print("")
-        print("FATAL ERROR: " .. tostring(err))
-        print("Please report this issue.")
+        print("Error: " .. tostring(err))
+        print("")
         
         -- Try to save crash log
         local crashLog = fs.open("/install-crash.log", "w")
@@ -952,9 +979,22 @@ local function main()
             crashLog.writeLine("RedNet-Explorer Installer Crash")
             crashLog.writeLine("Time: " .. os.date())
             crashLog.writeLine("Error: " .. tostring(err))
+            crashLog.writeLine("")
+            crashLog.writeLine("Terminal size: " .. width .. "x" .. height)
+            crashLog.writeLine("")
+            crashLog.writeLine("Stack trace:")
+            crashLog.writeLine(debug.traceback())
             crashLog.close()
-            print("Crash log saved to /install-crash.log")
+            print("Details saved to:")
+            print("/install-crash.log")
+        else
+            print("Could not save crash log!")
         end
+        print("")
+        print("Common issues:")
+        print("- HTTP not enabled")
+        print("- Terminal too small")
+        print("- Out of disk space")
     end
 end
 
