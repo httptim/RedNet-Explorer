@@ -194,105 +194,105 @@ end]]
         description = "Professional business website with services showcase",
         files = {
             ["index.lua"] = [[-- Corporate website homepage
-print([[<rwml version="1.0">
-<head>
-    <title>{{company_name}} - {{company_tagline}}</title>
-    <meta name="description" content="{{company_description}}" />
-</head>
-<body bgcolor="black" color="white">
-    <div bgcolor="{{primary_color}}" color="white" padding="2">
-        <h1 align="center">{{company_name}}</h1>
-        <p align="center">{{company_tagline}}</p>
-    </div>
-    
-    <div bgcolor="gray" padding="1" align="center">
-        <link url="/">Home</link> | 
-        <link url="/services">Services</link> | 
-        <link url="/about">About</link> | 
-        <link url="/contact">Contact</link>
-    </div>
-    
-    <div padding="2">
-        <h2 color="{{primary_color}}">Welcome to {{company_name}}</h2>
-        <p>{{welcome_text}}</p>
-        
-        <h3>Our Services</h3>
-        <ul>
-            <li><link url="/services#service1">{{service1_name}}</link></li>
-            <li><link url="/services#service2">{{service2_name}}</link></li>
-            <li><link url="/services#service3">{{service3_name}}</link></li>
-        </ul>
-        
-        <div bgcolor="{{primary_color}}" color="white" padding="1" align="center">
-            <h3>Get Started Today!</h3>
-            <p>{{cta_text}}</p>
-            <p><link url="/contact" bgcolor="white" color="{{primary_color}}">Contact Us</link></p>
-        </div>
-    </div>
-    
-    <hr color="gray" />
-    <div align="center" color="gray">
-        <p>© ]] .. os.date("%Y") .. [[ {{company_name}}. All rights reserved.</p>
-        <p>Computer ID: ]] .. os.getComputerID() .. [[</p>
-    </div>
-</body>
-</rwml>]])]]
+print("<rwml version=\"1.0\">")
+print("<head>")
+print("    <title>{{company_name}} - {{company_tagline}}</title>")
+print("    <meta name=\"description\" content=\"{{company_description}}\" />")
+print("</head>")
+print("<body bgcolor=\"black\" color=\"white\">")
+print("    <div bgcolor=\"{{primary_color}}\" color=\"white\" padding=\"2\">")
+print("        <h1 align=\"center\">{{company_name}}</h1>")
+print("        <p align=\"center\">{{company_tagline}}</p>")
+print("    </div>")
+print("    ")
+print("    <div bgcolor=\"gray\" padding=\"1\" align=\"center\">")
+print("        <link url=\"/\">Home</link> | ")
+print("        <link url=\"/services\">Services</link> | ")
+print("        <link url=\"/about\">About</link> | ")
+print("        <link url=\"/contact\">Contact</link>")
+print("    </div>")
+print("    ")
+print("    <div padding=\"2\">")
+print("        <h2 color=\"{{primary_color}}\">Welcome to {{company_name}}</h2>")
+print("        <p>{{welcome_text}}</p>")
+print("        ")
+print("        <h3>Our Services</h3>")
+print("        <ul>")
+print("            <li><link url=\"/services#service1\">{{service1_name}}</link></li>")
+print("            <li><link url=\"/services#service2\">{{service2_name}}</link></li>")
+print("            <li><link url=\"/services#service3\">{{service3_name}}</link></li>")
+print("        </ul>")
+print("        ")
+print("        <div bgcolor=\"{{primary_color}}\" color=\"white\" padding=\"1\" align=\"center\">")
+print("            <h3>Get Started Today!</h3>")
+print("            <p>{{cta_text}}</p>")
+print("            <p><link url=\"/contact\" bgcolor=\"white\" color=\"{{primary_color}}\">Contact Us</link></p>")
+print("        </div>")
+print("    </div>")
+print("    ")
+print("    <hr color=\"gray\" />")
+print("    <div align=\"center\" color=\"gray\">")
+print("        <p>© " .. os.date("%Y") .. " {{company_name}}. All rights reserved.</p>")
+print("        <p>Computer ID: " .. os.getComputerID() .. "</p>")
+print("    </div>")
+print("</body>")
+print("</rwml>")]]
 ,
             ["services.lua"] = [[-- Services page
-print([[<rwml version="1.0">
-<head>
-    <title>Services - {{company_name}}</title>
-</head>
-<body bgcolor="black" color="white">
-    <div bgcolor="{{primary_color}}" color="white" padding="2">
-        <h1>Our Services</h1>
-    </div>
-    
-    <div bgcolor="gray" padding="1" align="center">
-        <link url="/">Home</link> | 
-        <link url="/services">Services</link> | 
-        <link url="/about">About</link> | 
-        <link url="/contact">Contact</link>
-    </div>
-    
-    <div padding="2">
-        <a name="service1"></a>
-        <h2 color="{{primary_color}}">{{service1_name}}</h2>
-        <p>{{service1_description}}</p>
-        <ul>
-            <li>{{service1_feature1}}</li>
-            <li>{{service1_feature2}}</li>
-            <li>{{service1_feature3}}</li>
-        </ul>
-        
-        <hr />
-        
-        <a name="service2"></a>
-        <h2 color="{{primary_color}}">{{service2_name}}</h2>
-        <p>{{service2_description}}</p>
-        <ul>
-            <li>{{service2_feature1}}</li>
-            <li>{{service2_feature2}}</li>
-            <li>{{service2_feature3}}</li>
-        </ul>
-        
-        <hr />
-        
-        <a name="service3"></a>
-        <h2 color="{{primary_color}}">{{service3_name}}</h2>
-        <p>{{service3_description}}</p>
-        <ul>
-            <li>{{service3_feature1}}</li>
-            <li>{{service3_feature2}}</li>
-            <li>{{service3_feature3}}</li>
-        </ul>
-        
-        <div bgcolor="{{primary_color}}" color="white" padding="1" align="center">
-            <p>Ready to get started? <link url="/contact">Contact us today!</link></p>
-        </div>
-    </div>
-</body>
-</rwml>]])]]
+print("<rwml version=\"1.0\">")
+print("<head>")
+print("    <title>Services - {{company_name}}</title>")
+print("</head>")
+print("<body bgcolor=\"black\" color=\"white\">")
+print("    <div bgcolor=\"{{primary_color}}\" color=\"white\" padding=\"2\">")
+print("        <h1>Our Services</h1>")
+print("    </div>")
+print("    ")
+print("    <div bgcolor=\"gray\" padding=\"1\" align=\"center\">")
+print("        <link url=\"/\">Home</link> | ")
+print("        <link url=\"/services\">Services</link> | ")
+print("        <link url=\"/about\">About</link> | ")
+print("        <link url=\"/contact\">Contact</link>")
+print("    </div>")
+print("    ")
+print("    <div padding=\"2\">")
+print("        <a name=\"service1\"></a>")
+print("        <h2 color=\"{{primary_color}}\">{{service1_name}}</h2>")
+print("        <p>{{service1_description}}</p>")
+print("        <ul>")
+print("            <li>{{service1_feature1}}</li>")
+print("            <li>{{service1_feature2}}</li>")
+print("            <li>{{service1_feature3}}</li>")
+print("        </ul>")
+print("        ")
+print("        <hr />")
+print("        ")
+print("        <a name=\"service2\"></a>")
+print("        <h2 color=\"{{primary_color}}\">{{service2_name}}</h2>")
+print("        <p>{{service2_description}}</p>")
+print("        <ul>")
+print("            <li>{{service2_feature1}}</li>")
+print("            <li>{{service2_feature2}}</li>")
+print("            <li>{{service2_feature3}}</li>")
+print("        </ul>")
+print("        ")
+print("        <hr />")
+print("        ")
+print("        <a name=\"service3\"></a>")
+print("        <h2 color=\"{{primary_color}}\">{{service3_name}}</h2>")
+print("        <p>{{service3_description}}</p>")
+print("        <ul>")
+print("            <li>{{service3_feature1}}</li>")
+print("            <li>{{service3_feature2}}</li>")
+print("            <li>{{service3_feature3}}</li>")
+print("        </ul>")
+print("        ")
+print("        <div bgcolor=\"{{primary_color}}\" color=\"white\" padding=\"1\" align=\"center\">")
+print("            <p>Ready to get started? <link url=\"/contact\">Contact us today!</link></p>")
+print("        </div>")
+print("    </div>")
+print("</body>")
+print("</rwml>")]]
 ,
             ["config.json"] = [[{
     "theme": {
@@ -407,34 +407,34 @@ end
 
 local post = posts[postId]
 
-print([[<rwml version="1.0">
-<head>
-    <title>]] .. html.escape(post.title) .. [[ - {{blog_title}}</title>
-</head>
-<body bgcolor="black" color="white">
-    <div bgcolor="{{accent_color}}" color="white" padding="1">
-        <p><link url="/">← Back to {{blog_title}}</link></p>
-    </div>
-    
-    <div padding="2">
-        <h1>]] .. html.escape(post.title) .. [[</h1>
-        <p color="lightGray">Posted on ]] .. post.date .. [[ | Category: ]] .. html.escape(post.category or "Uncategorized") .. [[</p>
-        
-        <hr />
-        
-        <div>
-            ]] .. html.escape(post.content):gsub("\n", "<br />") .. [[
-        </div>
-        
-        <hr />
-        
-        <p align="center">
-            <link url="/">Home</link> | 
-            <link url="/archive">All Posts</link>
-        </p>
-    </div>
-</body>
-</rwml>]])]]
+print("<rwml version=\"1.0\">")
+print("<head>")
+print("    <title>" .. html.escape(post.title) .. " - {{blog_title}}</title>")
+print("</head>")
+print("<body bgcolor=\"black\" color=\"white\">")
+print("    <div bgcolor=\"{{accent_color}}\" color=\"white\" padding=\"1\">")
+print("        <p><link url=\"/\">← Back to {{blog_title}}</link></p>")
+print("    </div>")
+print("    ")
+print("    <div padding=\"2\">")
+print("        <h1>" .. html.escape(post.title) .. "</h1>")
+print("        <p color=\"lightGray\">Posted on " .. post.date .. " | Category: " .. html.escape(post.category or "Uncategorized") .. "</p>")
+print("        ")
+print("        <hr />")
+print("        ")
+print("        <div>")
+print("            " .. html.escape(post.content):gsub("\n", "<br />"))
+print("        </div>")
+print("        ")
+print("        <hr />")
+print("        ")
+print("        <p align=\"center\">")
+print("            <link url=\"/\">Home</link> | ")
+print("            <link url=\"/archive\">All Posts</link>")
+print("        </p>")
+print("    </div>")
+print("</body>")
+print("</rwml>")]]
 ,
             ["admin.lua"] = [[-- Blog admin panel
 if request.method == "POST" and request.params.title then
@@ -635,47 +635,46 @@ local stats = storage.get("dashboard_stats") or {
 stats.visits = stats.visits + 1
 storage.set("dashboard_stats", stats)
 
-print([[<rwml version="1.0">
-<head>
-    <title>{{app_name}} Dashboard</title>
-    <meta http-equiv="refresh" content="30" />
-</head>
-<body bgcolor="black" color="white">
-    <div bgcolor="{{primary_color}}" color="white" padding="1">
-        <h1>{{app_name}} Dashboard</h1>
-        <p align="right">]] .. os.date("%H:%M:%S") .. [[</p>
-    </div>
-    
-    <div padding="1">
-        <table width="100%">
-            <tr>
-                <td width="33%" bgcolor="green" color="white" padding="1" align="center">
-                    <h2>]] .. stats.visits .. [[</h2>
-                    <p>Total Visits</p>
-                </td>
-                <td width="33%" bgcolor="blue" color="white" padding="1" align="center">
-                    <h2>]] .. #stats.users .. [[</h2>
-                    <p>Active Users</p>
-                </td>
-                <td width="34%" bgcolor="orange" color="white" padding="1" align="center">
-                    <h2>]] .. #stats.events .. [[</h2>
-                    <p>Events Today</p>
-                </td>
-            </tr>
-        </table>
-    </div>
-    
-    <div padding="2">
-        <h2>Quick Actions</h2>
-        <p>
-            <link url="/dashboard/users" bgcolor="gray" color="white" padding="1">Manage Users</link>
-            <link url="/dashboard/settings" bgcolor="gray" color="white" padding="1">Settings</link>
-            <link url="/dashboard/logs" bgcolor="gray" color="white" padding="1">View Logs</link>
-        </p>
-        
-        <h2>Recent Activity</h2>
-        <div bgcolor="gray" padding="1">
-]])
+print("<rwml version=\"1.0\">")
+print("<head>")
+print("    <title>{{app_name}} Dashboard</title>")
+print("    <meta http-equiv=\"refresh\" content=\"30\" />")
+print("</head>")
+print("<body bgcolor=\"black\" color=\"white\">")
+print("    <div bgcolor=\"{{primary_color}}\" color=\"white\" padding=\"1\">")
+print("        <h1>{{app_name}} Dashboard</h1>")
+print("        <p align=\"right\">" .. os.date("%H:%M:%S") .. "</p>")
+print("    </div>")
+print("    ")
+print("    <div padding=\"1\">")
+print("        <table width=\"100%\">")
+print("            <tr>")
+print("                <td width=\"33%\" bgcolor=\"green\" color=\"white\" padding=\"1\" align=\"center\">")
+print("                    <h2>" .. stats.visits .. "</h2>")
+print("                    <p>Total Visits</p>")
+print("                </td>")
+print("                <td width=\"33%\" bgcolor=\"blue\" color=\"white\" padding=\"1\" align=\"center\">")
+print("                    <h2>" .. #stats.users .. "</h2>")
+print("                    <p>Active Users</p>")
+print("                </td>")
+print("                <td width=\"34%\" bgcolor=\"orange\" color=\"white\" padding=\"1\" align=\"center\">")
+print("                    <h2>" .. #stats.events .. "</h2>")
+print("                    <p>Events Today</p>")
+print("                </td>")
+print("            </tr>")
+print("        </table>")
+print("    </div>")
+print("    ")
+print("    <div padding=\"2\">")
+print("        <h2>Quick Actions</h2>")
+print("        <p>")
+print("            <link url=\"/dashboard/users\" bgcolor=\"gray\" color=\"white\" padding=\"1\">Manage Users</link>")
+print("            <link url=\"/dashboard/settings\" bgcolor=\"gray\" color=\"white\" padding=\"1\">Settings</link>")
+print("            <link url=\"/dashboard/logs\" bgcolor=\"gray\" color=\"white\" padding=\"1\">View Logs</link>")
+print("        </p>")
+print("        ")
+print("        <h2>Recent Activity</h2>")
+print("        <div bgcolor=\"gray\" padding=\"1\">")
 
 -- Show recent events
 local recentEvents = {}
@@ -740,64 +739,64 @@ print(json.encode(status))]]
         description = "REST API with CRUD operations",
         files = {
             ["index.lua"] = [[-- API documentation homepage
-print([[<rwml version="1.0">
-<head>
-    <title>{{api_name}} - API Documentation</title>
-</head>
-<body bgcolor="black" color="white">
-    <div bgcolor="orange" color="white" padding="2">
-        <h1>{{api_name}}</h1>
-        <p>{{api_description}}</p>
-    </div>
-    
-    <div padding="2">
-        <h2>Base URL</h2>
-        <div bgcolor="gray" padding="1">
-            <code>{{base_url}}</code>
-        </div>
-        
-        <h2>Endpoints</h2>
-        
-        <h3>GET /api/items</h3>
-        <p>Retrieve all items</p>
-        <div bgcolor="gray" padding="1">
-            <pre>Response:
-{
-    "success": true,
-    "data": [
-        {"id": 1, "name": "Item 1"},
-        {"id": 2, "name": "Item 2"}
-    ]
-}</pre>
-        </div>
-        
-        <h3>GET /api/items/{id}</h3>
-        <p>Retrieve a specific item</p>
-        
-        <h3>POST /api/items</h3>
-        <p>Create a new item</p>
-        <div bgcolor="gray" padding="1">
-            <pre>Request:
-{
-    "name": "New Item",
-    "value": 123
-}</pre>
-        </div>
-        
-        <h3>PUT /api/items/{id}</h3>
-        <p>Update an existing item</p>
-        
-        <h3>DELETE /api/items/{id}</h3>
-        <p>Delete an item</p>
-        
-        <h2>Authentication</h2>
-        <p>{{auth_description}}</p>
-        
-        <h2>Rate Limiting</h2>
-        <p>{{rate_limit_description}}</p>
-    </div>
-</body>
-</rwml>]])]]
+print("<rwml version=\"1.0\">")
+print("<head>")
+print("    <title>{{api_name}} - API Documentation</title>")
+print("</head>")
+print("<body bgcolor=\"black\" color=\"white\">")
+print("    <div bgcolor=\"orange\" color=\"white\" padding=\"2\">")
+print("        <h1>{{api_name}}</h1>")
+print("        <p>{{api_description}}</p>")
+print("    </div>")
+print("    ")
+print("    <div padding=\"2\">")
+print("        <h2>Base URL</h2>")
+print("        <div bgcolor=\"gray\" padding=\"1\">")
+print("            <code>{{base_url}}</code>")
+print("        </div>")
+print("        ")
+print("        <h2>Endpoints</h2>")
+print("        ")
+print("        <h3>GET /api/items</h3>")
+print("        <p>Retrieve all items</p>")
+print("        <div bgcolor=\"gray\" padding=\"1\">")
+print("            <pre>Response:")
+print("{")
+print("    \"success\": true,")
+print("    \"data\": [")
+print("        {\"id\": 1, \"name\": \"Item 1\"},")
+print("        {\"id\": 2, \"name\": \"Item 2\"}")
+print("    ]")
+print("}</pre>")
+print("        </div>")
+print("        ")
+print("        <h3>GET /api/items/{id}</h3>")
+print("        <p>Retrieve a specific item</p>")
+print("        ")
+print("        <h3>POST /api/items</h3>")
+print("        <p>Create a new item</p>")
+print("        <div bgcolor=\"gray\" padding=\"1\">")
+print("            <pre>Request:")
+print("{")
+print("    \"name\": \"New Item\",")
+print("    \"value\": 123")
+print("}</pre>")
+print("        </div>")
+print("        ")
+print("        <h3>PUT /api/items/{id}</h3>")
+print("        <p>Update an existing item</p>")
+print("        ")
+print("        <h3>DELETE /api/items/{id}</h3>")
+print("        <p>Delete an item</p>")
+print("        ")
+print("        <h2>Authentication</h2>")
+print("        <p>{{auth_description}}</p>")
+print("        ")
+print("        <h2>Rate Limiting</h2>")
+print("        <p>{{rate_limit_description}}</p>")
+print("    </div>")
+print("</body>")
+print("</rwml>")]]
 ,
             ["api/items.lua"] = [[-- RESTful API for items
 response.setHeader("Content-Type", "application/json")
