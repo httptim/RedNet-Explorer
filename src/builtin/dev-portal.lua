@@ -44,7 +44,7 @@ function devPortal.generateMenu()
         
         <h2 color="lime">Your Websites</h2>
         <p>Files in: /websites/</p>
-        <ul>]] .. devPortal.generateFileList() .. "</ul>" .. [[
+        <ul>]] .. devPortal.generateFileList() .. [[</ul>
         
         <h2 color="cyan">Development Tools</h2>
         <ul>

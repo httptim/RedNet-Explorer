@@ -44,8 +44,7 @@ function googlePortal.generateSearchPage(query, results)
             <table width="100%">
                 <tr>
                     <td width="80%">
-                        <input type="text" name="q" value="]] .. (query or "") .. "\" " .. [[
-                               placeholder="Search RedNet..." style="width:100%" />
+                        <input type="text" name="q" value="]] .. (query or "") .. [[" placeholder="Search RedNet..." style="width:100%" />
                     </td>
                     <td width="20%" align="right">
                         <button type="submit" bgcolor="blue" color="white">Search</button>
@@ -68,7 +67,7 @@ function googlePortal.generateSearchPage(query, results)
         if results.total > 0 then
             html = html .. [[
         <hr color="gray" />
-        <p color="yellow">Found ]] .. results.total .. " results for \"" .. query .. "\"</p>" .. [[
+        <p color="yellow">Found ]] .. results.total .. " results for \"" .. query .. [[</p>
         
         <div padding="1">
 ]]
@@ -79,7 +78,7 @@ function googlePortal.generateSearchPage(query, results)
                 
                 html = html .. [[
             <div margin="1">
-                <h3><link url="]] .. doc.url .. "\">" .. doc.title .. "</link></h3>" .. [[
+                <h3><link url="]] .. doc.url .. '">' .. doc.title .. [[</link></h3>
                 <p color="green" size="small">]] .. doc.url .. [[</p>
                 <p color="gray">]] .. snippet .. [[</p>
                 <p color="gray" size="small">
@@ -103,16 +102,16 @@ function googlePortal.generateSearchPage(query, results)
             
             if currentPage > 1 then
                 local prevOffset = (currentPage - 2) * 20
-                html = html .. [[<link url="rdnt://google/search?q=]] .. query .. 
-                       [[&offset=]] .. prevOffset .. [[">Previous</link> ]]
+                html = html .. '<link url="rdnt://google/search?q=' .. query .. 
+                       '&offset=' .. prevOffset .. '">Previous</link> '
             end
             
-            html = html .. [[Page ]] .. currentPage .. [[ of ]] .. totalPages
+            html = html .. "Page " .. currentPage .. " of " .. totalPages
             
             if currentPage < totalPages then
                 local nextOffset = currentPage * 20
-                html = html .. [[ <link url="rdnt://google/search?q=]] .. query .. 
-                       [[&offset=]] .. nextOffset .. [[">Next</link>]]
+                html = html .. ' <link url="rdnt://google/search?q=' .. query .. 
+                       '&offset=' .. nextOffset .. '">Next</link>'
             end
             
             html = html .. [[
@@ -121,7 +120,7 @@ function googlePortal.generateSearchPage(query, results)
         else
             html = html .. [[
         <hr color="gray" />
-        <p color="yellow">No results found for "]] .. query .. "\"</p>" .. [[
+        <p color="yellow">No results found for "]] .. query .. [[</p>
         <p>Try different keywords or check your spelling.</p>
 ]]
         end

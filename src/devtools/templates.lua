@@ -348,26 +348,25 @@ local posts = storage.get("blog_posts") or {}
 -- Sort posts by date (newest first)
 table.sort(posts, function(a, b) return a.timestamp > b.timestamp end)
 
-print([[<rwml version="1.0">
-<head>
-    <title>{{blog_title}}</title>
-    <meta name="author" content="{{author_name}}" />
-</head>
-<body bgcolor="black" color="white">
-    <div bgcolor="{{accent_color}}" color="white" padding="2">
-        <h1 align="center">{{blog_title}}</h1>
-        <p align="center">{{blog_subtitle}}</p>
-    </div>
-    
-    <div padding="2">
-        <p align="right">
-            <link url="/admin">Admin</link> | 
-            <link url="/archive">Archive</link> | 
-            <link url="/about">About</link>
-        </p>
-        
-        <h2>Recent Posts</h2>
-]])
+print("<rwml version=\"1.0\">")
+print("<head>")
+print("    <title>{{blog_title}}</title>")
+print("    <meta name=\"author\" content=\"{{author_name}}\" />")
+print("</head>")
+print("<body bgcolor=\"black\" color=\"white\">")
+print("    <div bgcolor=\"{{accent_color}}\" color=\"white\" padding=\"2\">")
+print("        <h1 align=\"center\">{{blog_title}}</h1>")
+print("        <p align=\"center\">{{blog_subtitle}}</p>")
+print("    </div>")
+print("    ")
+print("    <div padding=\"2\">")
+print("        <p align=\"right\">")
+print("            <link url=\"/admin\">Admin</link> | ")
+print("            <link url=\"/archive\">Archive</link> | ")
+print("            <link url=\"/about\">About</link>")
+print("        </p>")
+print("        ")
+print("        <h2>Recent Posts</h2>")
 
 -- Display recent posts
 local maxPosts = 5
@@ -385,14 +384,13 @@ if #posts == 0 then
     print('<p color="gray">No posts yet. <link url="/admin">Create your first post!</link></p>')
 end
 
-print([[
-        <hr color="gray" />
-        <p align="center" color="gray">
-            {{blog_footer}}
-        </p>
-    </div>
-</body>
-</rwml>]])]]
+print("        <hr color=\"gray\" />")
+print("        <p align=\"center\" color=\"gray\">")
+print("            {{blog_footer}}")
+print("        </p>")
+print("    </div>")
+print("</body>")
+print("</rwml>")]]
 ,
             ["post.lua"] = [[-- Individual blog post viewer
 local posts = storage.get("blog_posts") or {}
@@ -456,51 +454,52 @@ if request.method == "POST" and request.params.title then
     return
 end
 
-print([[<rwml version="1.0">
-<head>
-    <title>Admin - {{blog_title}}</title>
-</head>
-<body bgcolor="black" color="white">
-    <div bgcolor="red" color="white" padding="1">
-        <h1>Admin Panel</h1>
-    </div>
-    
-    <div padding="2">
-        <h2>Create New Post</h2>
-        
-        <form method="post">
-            <table>
-                <tr>
-                    <td>Title:</td>
-                    <td><input type="text" name="title" size="40" required /></td>
-                </tr>
-                <tr>
-                    <td>Category:</td>
-                    <td>
-                        <select name="category">
-                            <option>General</option>
-                            <option>Tech</option>
-                            <option>Life</option>
-                            <option>Projects</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td valign="top">Content:</td>
-                    <td><textarea name="content" rows="10" cols="40" required></textarea></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <button type="submit" bgcolor="green" color="white">Publish Post</button>
-                        <link url="/">Cancel</link>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
-</body>
-</rwml>]])]]
+-- Generate admin panel HTML
+print('<rwml version="1.0">')
+print('<head>')
+print('    <title>Admin - {{blog_title}}</title>')
+print('</head>')
+print('<body bgcolor="black" color="white">')
+print('    <div bgcolor="red" color="white" padding="1">')
+print('        <h1>Admin Panel</h1>')
+print('    </div>')
+print('    ')
+print('    <div padding="2">')
+print('        <h2>Create New Post</h2>')
+print('        ')
+print('        <form method="post">')
+print('            <table>')
+print('                <tr>')
+print('                    <td>Title:</td>')
+print('                    <td><input type="text" name="title" size="40" required /></td>')
+print('                </tr>')
+print('                <tr>')
+print('                    <td>Category:</td>')
+print('                    <td>')
+print('                        <select name="category">')
+print('                            <option>General</option>')
+print('                            <option>Tech</option>')
+print('                            <option>Life</option>')
+print('                            <option>Projects</option>')
+print('                        </select>')
+print('                    </td>')
+print('                </tr>')
+print('                <tr>')
+print('                    <td valign="top">Content:</td>')
+print('                    <td><textarea name="content" rows="10" cols="40" required></textarea></td>')
+print('                </tr>')
+print('                <tr>')
+print('                    <td></td>')
+print('                    <td>')
+print('                        <button type="submit" bgcolor="green" color="white">Publish Post</button>')
+print('                        <link url="/">Cancel</link>')
+print('                    </td>')
+print('                </tr>')
+print('            </table>')
+print('        </form>')
+print('    </div>')
+print('</body>')
+print('</rwml>')]]
         },
         variables = {
             blog_title = {default = "My RedNet Blog", description = "Blog title"},
@@ -692,13 +691,12 @@ else
     print("<p color='lightGray'>No recent activity</p>")
 end
 
-print([[
-        </div>
-        
-        <p align="center" color="gray">Dashboard auto-refreshes every 30 seconds</p>
-    </div>
-</body>
-</rwml>]])]]
+print("        </div>")
+print("        ")
+print("        <p align=\"center\" color=\"gray\">Dashboard auto-refreshes every 30 seconds</p>")
+print("    </div>")
+print("</body>")
+print("</rwml>")]]
 ,
             ["api/status.lua"] = [[-- Status API endpoint
 response.setHeader("Content-Type", "application/json")
