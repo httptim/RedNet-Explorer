@@ -202,6 +202,16 @@ function ui.clearContent()
     end
     
     term.setCursorPos(1, state.contentTop)
+    
+    -- Clear clickable elements from content area
+    local newElements = {}
+    for _, element in ipairs(state.elements) do
+        -- Keep UI elements that are not in the content area
+        if element.y < state.contentTop or element.y > state.contentBottom then
+            table.insert(newElements, element)
+        end
+    end
+    state.elements = newElements
 end
 
 -- Set address bar text

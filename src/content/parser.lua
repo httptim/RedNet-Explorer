@@ -115,7 +115,15 @@ function parser:parse()
     })
     
     -- Parse until EOF
+    local iterations = 0
     while not self:isTokenType("EOF") do
+        iterations = iterations + 1
+        if iterations % 50 == 0 then
+            -- Yield every 50 iterations to prevent "too long without yielding"
+            os.queueEvent("parser_yield")
+            os.pullEvent("parser_yield")
+        end
+        
         local node = self:parseNode()
         if node then
             table.insert(document.children, node)
@@ -255,7 +263,15 @@ end
 
 -- Parse attributes
 function parser:parseAttributes(element)
+    local attrCount = 0
     while self:isTokenType("ATTRIBUTE_NAME") do
+        attrCount = attrCount + 1
+        if attrCount % 20 == 0 then
+            -- Yield every 20 attributes
+            os.queueEvent("parser_yield")
+            os.pullEvent("parser_yield")
+        end
+        
         local nameToken = self:advance()
         local name = nameToken.value
         
@@ -280,7 +296,15 @@ end
 
 -- Parse children of an element
 function parser:parseChildren(element)
+    local childCount = 0
     while not self:isTokenType("EOF") and not self:isTokenType("TAG_CLOSE") do
+        childCount = childCount + 1
+        if childCount % 30 == 0 then
+            -- Yield every 30 children
+            os.queueEvent("parser_yield")
+            os.pullEvent("parser_yield")
+        end
+        
         -- Check if we're at a closing tag for parent element
         if self:isTokenType("TAG_CLOSE") then
             local closeTag = self:peekToken()

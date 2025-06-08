@@ -60,6 +60,19 @@ function renderer.renderRWML(content)
         state.links = result.links or {}
         state.forms = result.forms or {}
         
+        -- Register links with UI
+        for _, link in ipairs(state.links) do
+            ui.registerElement({
+                type = "link",
+                url = link.url,
+                x = link.x1,
+                y = link.y1,
+                width = link.x2 - link.x1 + 1,
+                height = link.y2 - link.y1 + 1,
+                title = link.title
+            })
+        end
+        
         -- Store page metadata
         if result.metadata then
             state.pageTitle = result.metadata.title

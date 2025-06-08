@@ -282,7 +282,15 @@ function lexer:tokenize()
     self.tokens = {}
     self.errors = {}
     
+    local iterations = 0
     while self:currentChar() do
+        iterations = iterations + 1
+        if iterations % 100 == 0 then
+            -- Yield every 100 iterations
+            os.queueEvent("lexer_yield")
+            os.pullEvent("lexer_yield")
+        end
+        
         local startLine = self.line
         local startColumn = self.column
         
@@ -420,7 +428,15 @@ end
 
 -- Read attributes within a tag
 function lexer:readAttributes()
+    local attrCount = 0
     while true do
+        attrCount = attrCount + 1
+        if attrCount % 20 == 0 then
+            -- Yield every 20 attributes
+            os.queueEvent("lexer_yield")
+            os.pullEvent("lexer_yield")
+        end
+        
         -- Skip whitespace
         if not self:skipWhitespace() then
             -- No whitespace means no more attributes
