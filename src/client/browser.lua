@@ -47,16 +47,26 @@ local state = {
 -- Initialize browser
 function browser.init()
     -- Initialize subsystems
+    print("  - Initializing DNS...")
     dnsSystem.init()
+    
+    print("  - Initializing UI...")
     ui.init(browser.CONFIG)
+    
+    print("  - Initializing navigation...")
     navigation.init()
+    
+    print("  - Initializing history...")
     history.init()
+    
+    print("  - Initializing bookmarks...")
     bookmarks.init()
     
     -- Set initial state
     state.running = true
     state.currentUrl = browser.CONFIG.homepage
     
+    print("  - Browser init complete!")
     return true
 end
 

@@ -62,7 +62,10 @@ function server.init(customConfig)
     end
     
     -- Initialize subsystems
+    print("  - Initializing DNS...")
     dnsSystem.init()
+    
+    print("  - Initializing discovery...")
     discovery.init(discovery.PEER_TYPES.SERVER, {
         name = "RedNet-Explorer Server",
         version = "1.0.0",
@@ -70,15 +73,23 @@ function server.init(customConfig)
     })
     
     -- Initialize components
+    print("  - Initializing config...")
     config.init(server.CONFIG)
+    
+    print("  - Initializing logger...")
     logger.init(server.CONFIG.enableLogging)
+    
+    print("  - Initializing file server...")
     fileServer.init(server.CONFIG.documentRoot)
+    
+    print("  - Initializing request handler...")
     requestHandler.init(server.CONFIG)
     
     -- Set server state
     state.running = true
     state.startTime = os.epoch("utc")
     
+    print("  - Server init complete!")
     return true
 end
 
