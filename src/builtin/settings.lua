@@ -202,7 +202,7 @@ function settings.handleSave(formData)
     -- Save settings
     saveSettings(config)
     
-    -- Return success page
+    -- Return success page (just the body, handleRequest wraps it)
     return [[<rwml version="1.0">
 <head>
     <title>Settings Saved</title>
