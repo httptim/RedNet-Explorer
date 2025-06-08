@@ -423,7 +423,7 @@ function server.cleanupConnections()
         
         -- Remove old connections
         for i = #state.connections, 1, -1 do
-            if now - state.connections[i].timestamp > timeout do
+            if now - state.connections[i].timestamp > timeout then
                 table.remove(state.connections, i)
                 logger.warn("Removed timed out connection")
             end
