@@ -107,10 +107,12 @@ local function startBrowser(options)
     print("Starting RedNet-Explorer browser...")
     
     -- Load browser module
+    print("Loading browser module...")
     local success, browser = pcall(require, "src.client.browser")
     if not success then
         error("Failed to load browser: " .. browser)
     end
+    print("Browser module loaded successfully!")
     
     -- Apply options
     if options.home then
@@ -127,7 +129,9 @@ local function startBrowser(options)
     end
     
     -- Start browser
+    print("Starting browser.run()...")
     browser.run()
+    print("Browser exited.")
 end
 
 -- Start server mode
@@ -136,11 +140,13 @@ local function startServer(options)
     print("Starting RedNet-Explorer server...")
     
     -- Load server module
+    print("Loading server module...")
     local success, result = pcall(require, "src.server.server")
     if not success then
         error("Failed to load server module: " .. tostring(result))
     end
     local server = result
+    print("Server module loaded successfully!")
     
     -- Apply options
     if options.port then
@@ -156,7 +162,9 @@ local function startServer(options)
     end
     
     -- Start server
+    print("Starting server.run()...")
     server.run()
+    print("Server exited.")
 end
 
 -- Parse options

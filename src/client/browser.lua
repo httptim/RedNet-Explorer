@@ -62,14 +62,21 @@ end
 
 -- Main browser loop
 function browser.run()
+    print("browser.run() called")
+    
     if not state.running then
+        print("Initializing browser...")
         browser.init()
     end
     
+    print("Clearing screen...")
     -- Clear screen and draw initial UI
     ui.clear()
+    
+    print("Drawing interface...")
     ui.drawInterface()
     
+    print("Navigating to homepage: " .. browser.CONFIG.homepage)
     -- Navigate to homepage
     browser.navigate(browser.CONFIG.homepage)
     
