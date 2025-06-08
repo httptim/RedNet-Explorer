@@ -57,8 +57,8 @@ function dns.init()
     -- Load cached DNS entries if available
     dns.loadCache()
     
-    -- Start DNS responder
-    dns.startResponder()
+    -- Don't start responder here - it should be started in parallel
+    -- The server/browser will start it when needed
     
     return true
 end
