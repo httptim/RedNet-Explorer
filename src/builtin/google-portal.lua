@@ -541,14 +541,20 @@ function googlePortal.handleRequest(request)
             -- Queue site for indexing
             googlePortal.queueSiteForIndexing(params.url)
             
-            return [[<rwml version="1.0">
-            <body bgcolor="black" color="white">
-                <h1 color="green">Site Submitted</h1>
-                <p>Your site has been queued for indexing.</p>
-                <p>It may take a few minutes to appear in search results.</p>
-                <p><link url="rdnt://google">Back to Search</link></p>
-            </body>
-            </rwml>]]
+            return {
+                status = 200,
+                headers = {
+                    ["Content-Type"] = "text/rwml"
+                },
+                body = [[<rwml version="1.0">
+                <body bgcolor="black" color="white">
+                    <h1 color="green">Site Submitted</h1>
+                    <p>Your site has been queued for indexing.</p>
+                    <p>It may take a few minutes to appear in search results.</p>
+                    <p><link url="rdnt://google">Back to Search</link></p>
+                </body>
+                </rwml>]]
+            }
         else
             return {
                 status = 200,
@@ -571,7 +577,12 @@ function googlePortal.handleRequest(request)
         
     -- About page
     elseif path:match("/about") then
-        return [[<rwml version="1.0">
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = [[<rwml version="1.0">
         <head>
             <title>About - RedNet Search</title>
         </head>
@@ -606,39 +617,58 @@ function googlePortal.handleRequest(request)
             </div>
         </body>
         </rwml>]]
+        }
         
     -- Reindex action
     elseif path:match("/reindex") then
         googlePortal.triggerReindex()
-        return [[<rwml version="1.0">
-        <body bgcolor="black" color="white">
-            <h1 color="yellow">Reindexing Started</h1>
-            <p>The search index is being rebuilt.</p>
-            <p>This may take several minutes.</p>
-            <p><link url="rdnt://google">Back to Search</link></p>
-        </body>
-        </rwml>]]
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = [[<rwml version="1.0">
+            <body bgcolor="black" color="white">
+                <h1 color="yellow">Reindexing Started</h1>
+                <p>The search index is being rebuilt.</p>
+                <p>This may take several minutes.</p>
+                <p><link url="rdnt://google">Back to Search</link></p>
+            </body>
+            </rwml>]]
+        }
         
     -- Crawl action
     elseif path:match("/crawl") then
         googlePortal.triggerCrawl()
-        return [[<rwml version="1.0">
-        <body bgcolor="black" color="white">
-            <h1 color="yellow">Crawl Started</h1>
-            <p>Crawling for new content...</p>
-            <p><link url="rdnt://google">Back to Search</link></p>
-        </body>
-        </rwml>]]
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = [[<rwml version="1.0">
+            <body bgcolor="black" color="white">
+                <h1 color="yellow">Crawl Started</h1>
+                <p>Crawling for new content...</p>
+                <p><link url="rdnt://google">Back to Search</link></p>
+            </body>
+            </rwml>]]
+        }
         
     else
         -- 404
-        return [[<rwml version="1.0">
-        <body bgcolor="black" color="white">
-            <h1 color="red">Page Not Found</h1>
-            <p>The requested page was not found.</p>
-            <p><link url="rdnt://google">Back to Search</link></p>
-        </body>
-        </rwml>]]
+        return {
+            status = 404,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = [[<rwml version="1.0">
+            <body bgcolor="black" color="white">
+                <h1 color="red">Page Not Found</h1>
+                <p>The requested page was not found.</p>
+                <p><link url="rdnt://google">Back to Search</link></p>
+            </body>
+            </rwml>]]
+        }
     end
 end
 

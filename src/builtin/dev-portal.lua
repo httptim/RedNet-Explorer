@@ -474,15 +474,33 @@ function devPortal.handleRequest(request)
     
     -- Main menu
     if path == "/" or path == "/index.lua" or path == "rdnt://dev-portal" then
-        return devPortal.generateMenu()
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = devPortal.generateMenu()
+        }
         
     -- Help documentation
     elseif path:match("/help") then
-        return devPortal.generateHelp()
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = devPortal.generateHelp()
+        }
         
     -- New file menu
     elseif path:match("/new$") then
-        return devPortal.generateNewFileMenu()
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = devPortal.generateNewFileMenu()
+        }
         
     -- Create new file from template
     elseif path:match("/new") and params.template then
