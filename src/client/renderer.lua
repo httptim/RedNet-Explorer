@@ -47,8 +47,12 @@ end
 function renderer.renderRWML(content)
     renderer.init()
     
-    -- Use the new RWML renderer
-    local success, result = rwml.render(content, term, {
+    -- Create a window for the content area
+    local dims = ui.getContentDimensions()
+    local contentWindow = window.create(term.current(), 1, dims.top, dims.width, dims.height)
+    
+    -- Use the new RWML renderer with the content window
+    local success, result = rwml.render(content, contentWindow, {
         renderOnError = true  -- Try to render even with errors
     })
     
@@ -60,13 +64,14 @@ function renderer.renderRWML(content)
         state.links = result.links or {}
         state.forms = result.forms or {}
         
-        -- Register links with UI
+        -- Register links with UI (adjust coordinates for content area offset)
+        local dims = ui.getContentDimensions()
         for _, link in ipairs(state.links) do
             ui.registerElement({
                 type = "link",
                 url = link.url,
                 x = link.x1,
-                y = link.y1,
+                y = link.y1 + dims.top - 1,  -- Adjust y coordinate for content area
                 width = link.x2 - link.x1 + 1,
                 height = link.y2 - link.y1 + 1,
                 title = link.title

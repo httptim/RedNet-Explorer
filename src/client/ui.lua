@@ -10,7 +10,8 @@ local themeManager = require("src.ui.theme_manager")
 ui.CONFIG = {
     -- Layout
     titleHeight = 1,
-    addressHeight = 1,
+    addressHeight = 2,  -- Make address bar taller for navigation buttons + URL
+    tabHeight = 1,      -- Tab bar
     statusHeight = 1,
     menuWidth = 20,
     
@@ -50,7 +51,7 @@ function ui.init(config)
     state.width, state.height = term.getSize()
     
     -- Calculate content area
-    state.contentTop = ui.CONFIG.titleHeight + ui.CONFIG.addressHeight + 1
+    state.contentTop = ui.CONFIG.titleHeight + ui.CONFIG.addressHeight + ui.CONFIG.tabHeight + 1
     state.contentBottom = state.height - ui.CONFIG.statusHeight
     
     -- Set initial colors from theme
@@ -72,6 +73,7 @@ end
 -- Draw main interface
 function ui.drawInterface()
     ui.drawTitleBar()
+    ui.drawTabBar()
     ui.drawAddressBar()
     ui.drawStatusBar()
 end
@@ -105,33 +107,85 @@ function ui.drawTitleBar()
     })
 end
 
--- Draw address bar
-function ui.drawAddressBar()
+-- Draw tab bar
+function ui.drawTabBar()
     local colors = themeManager.getColors()
     local y = ui.CONFIG.titleHeight + 1
     
+    term.setCursorPos(1, y)
+    term.setBackgroundColor(colors.tabBar or colors.gray)
+    term.setTextColor(colors.tabText or colors.white)
+    term.clearLine()
+    
+    -- Draw tabs (for now just one)
+    term.setCursorPos(2, y)
+    term.setBackgroundColor(colors.tabActive or colors.lightGray)
+    term.write(" Home ")
+    
+    -- Draw new tab button
+    term.setCursorPos(10, y)
+    term.setBackgroundColor(colors.tabBar or colors.gray)
+    term.write(" + ")
+    
+    -- Register tab controls
+    ui.registerElement({
+        type = "button",
+        action = "newtab",
+        x = 10,
+        y = y,
+        width = 3,
+        height = 1
+    })
+end
+
+-- Draw address bar
+function ui.drawAddressBar()
+    local colors = themeManager.getColors()
+    local y = ui.CONFIG.titleHeight + ui.CONFIG.tabHeight + 1
+    
+    -- First line - navigation buttons
     term.setCursorPos(1, y)
     term.setBackgroundColor(colors.addressBar)
     term.setTextColor(colors.addressText)
     term.clearLine()
     
-    -- Draw navigation buttons
+    -- Draw better navigation buttons
     term.setCursorPos(2, y)
     term.setBackgroundColor(colors.addressButton)
     term.setTextColor(colors.addressButtonText)
-    term.write("[<] [>] [R] [H]")
+    term.write(" < ")
+    term.setCursorPos(6, y)
+    term.write(" > ")
+    term.setCursorPos(10, y)
+    term.write(" R ")  -- Refresh
+    term.setCursorPos(14, y)
+    term.write(" H ")  -- Home
+    term.setCursorPos(18, y)
+    term.write(" * ")  -- Bookmarks
     
     -- Register navigation buttons
     ui.registerElement({type = "button", action = "back", x = 2, y = y, width = 3, height = 1})
     ui.registerElement({type = "button", action = "forward", x = 6, y = y, width = 3, height = 1})
     ui.registerElement({type = "button", action = "refresh", x = 10, y = y, width = 3, height = 1})
     ui.registerElement({type = "button", action = "home", x = 14, y = y, width = 3, height = 1})
+    ui.registerElement({type = "button", action = "bookmarks", x = 18, y = y, width = 3, height = 1})
     
-    -- Draw address field
-    local fieldStart = 18
-    local fieldWidth = state.width - fieldStart - 2
+    -- Second line - URL bar
+    y = y + 1
+    term.setCursorPos(1, y)
+    term.setBackgroundColor(colors.addressBar)
+    term.clearLine()
+    
+    -- Draw URL field
+    term.setCursorPos(2, y)
+    term.write("URL: ")
+    
+    local fieldStart = 7
+    local fieldWidth = state.width - fieldStart - 4
     
     term.setCursorPos(fieldStart, y)
+    term.setBackgroundColor(colors.white)
+    term.setTextColor(colors.black)
     term.write(string.rep(" ", fieldWidth))
     
     -- Draw URL
@@ -142,7 +196,13 @@ function ui.drawAddressBar()
     end
     term.write(displayUrl)
     
-    -- Register address bar
+    -- Draw go button
+    term.setCursorPos(state.width - 3, y)
+    term.setBackgroundColor(colors.addressButton)
+    term.setTextColor(colors.addressButtonText)
+    term.write(" GO ")
+    
+    -- Register address bar and go button
     ui.registerElement({
         type = "input",
         id = "addressBar",
@@ -151,6 +211,15 @@ function ui.drawAddressBar()
         width = fieldWidth,
         height = 1,
         value = state.addressBarText
+    })
+    
+    ui.registerElement({
+        type = "button",
+        action = "navigate",
+        x = state.width - 3,
+        y = y,
+        width = 4,
+        height = 1
     })
 end
 
@@ -218,6 +287,11 @@ end
 function ui.setAddressBar(text)
     state.addressBarText = text or ""
     ui.drawAddressBar()
+end
+
+-- Get address bar text
+function ui.getAddressBarText()
+    return state.addressBarText
 end
 
 -- Set status text

@@ -118,8 +118,8 @@ function parser:parse()
     local iterations = 0
     while not self:isTokenType("EOF") do
         iterations = iterations + 1
-        if iterations % 50 == 0 then
-            -- Yield every 50 iterations to prevent "too long without yielding"
+        if iterations % 200 == 0 then
+            -- Yield every 200 iterations to prevent "too long without yielding"
             os.queueEvent("parser_yield")
             os.pullEvent("parser_yield")
         end
@@ -266,8 +266,8 @@ function parser:parseAttributes(element)
     local attrCount = 0
     while self:isTokenType("ATTRIBUTE_NAME") do
         attrCount = attrCount + 1
-        if attrCount % 20 == 0 then
-            -- Yield every 20 attributes
+        if attrCount % 50 == 0 then
+            -- Yield every 50 attributes
             os.queueEvent("parser_yield")
             os.pullEvent("parser_yield")
         end
@@ -299,8 +299,8 @@ function parser:parseChildren(element)
     local childCount = 0
     while not self:isTokenType("EOF") and not self:isTokenType("TAG_CLOSE") do
         childCount = childCount + 1
-        if childCount % 30 == 0 then
-            -- Yield every 30 children
+        if childCount % 100 == 0 then
+            -- Yield every 100 children
             os.queueEvent("parser_yield")
             os.pullEvent("parser_yield")
         end

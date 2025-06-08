@@ -434,6 +434,9 @@ function browser.handleClick(button, x, y)
         elseif element.type == "input" then
             ui.focusInput(element)
         end
+    else
+        -- Debug: show what was clicked
+        ui.setStatus("Clicked at " .. x .. "," .. y .. " - no element")
     end
 end
 
@@ -466,6 +469,17 @@ function browser.handleButton(action)
         browser.showBookmarks()
     elseif action == "settings" then
         browser.showSettings()
+    elseif action == "navigate" then
+        -- Navigate to current address bar URL
+        local url = ui.getAddressBarText()
+        if url and url ~= "" then
+            browser.navigate(url)
+        end
+    elseif action == "newtab" then
+        -- For now, just go home in same tab
+        browser.home()
+    elseif action == "quit" then
+        state.running = false
     end
 end
 

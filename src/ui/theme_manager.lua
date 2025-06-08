@@ -52,6 +52,12 @@ local builtinThemes = {
             addressButton = colors.gray,
             addressButtonText = colors.white,
             
+            -- Tab bar
+            tabBar = colors.gray,
+            tabText = colors.white,
+            tabActive = colors.lightGray,
+            tabInactive = colors.gray,
+            
             -- Status bar
             statusBar = colors.gray,
             statusText = colors.white,

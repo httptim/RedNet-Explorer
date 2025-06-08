@@ -285,8 +285,8 @@ function lexer:tokenize()
     local iterations = 0
     while self:currentChar() do
         iterations = iterations + 1
-        if iterations % 100 == 0 then
-            -- Yield every 100 iterations
+        if iterations % 500 == 0 then
+            -- Yield every 500 iterations
             os.queueEvent("lexer_yield")
             os.pullEvent("lexer_yield")
         end
@@ -431,8 +431,8 @@ function lexer:readAttributes()
     local attrCount = 0
     while true do
         attrCount = attrCount + 1
-        if attrCount % 20 == 0 then
-            -- Yield every 20 attributes
+        if attrCount % 50 == 0 then
+            -- Yield every 50 attributes
             os.queueEvent("lexer_yield")
             os.pullEvent("lexer_yield")
         end
