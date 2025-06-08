@@ -4,7 +4,7 @@
 -- Method 1: Direct GitHub Installation (Recommended)
 -- Run this command in your CC:Tweaked computer:
 
-wget run https://raw.githubusercontent.com/httptim/RedNet-Explorer/main/install.lua
+wget run https://raw.githubusercontent.com/httptim/RedNet-Explorer/main/docs/github-installer-enhanced.lua
 
 -- OR if wget is not available, use this longer command:
 
