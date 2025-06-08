@@ -44,7 +44,7 @@ function devPortal.generateMenu()
         
         <h2 color="lime">Your Websites</h2>
         <p>Files in: /websites/</p>
-        <ul>]] .. devPortal.generateFileList() .. [[</ul>
+        <ul>]] .. devPortal.generateFileList() .. "</ul>" .. [[
         
         <h2 color="cyan">Development Tools</h2>
         <ul>
@@ -311,13 +311,12 @@ function devPortal.getTemplate(templateName)
         ["lua-basic"] = {
             name = "dynamic.lua",
             content = [[-- Dynamic page example
-print([[<rwml version="1.0">
-<head>
-    <title>Dynamic Page</title>
-</head>
-<body bgcolor="black" color="white">
-    <h1>Dynamic Content</h1>
-]])
+print("<rwml version=\"1.0\">")
+print("<head>")
+print("    <title>Dynamic Page</title>")
+print("</head>")
+print("<body bgcolor=\"black\" color=\"white\">")
+print("    <h1>Dynamic Content</h1>")
 
 -- Display current time
 print("<p>Current time: " .. os.date("%Y-%m-%d %H:%M:%S") .. "</p>")
@@ -334,11 +333,10 @@ if request.params.name then
     print("<p>Hello, " .. html.escape(request.params.name) .. "!</p>")
 end
 
-print([[
-    <hr />
-    <p><link url="/">Back to Home</link></p>
-</body>
-</rwml>]])]]
+print("    <hr />")
+print("    <p><link url=\"/\">Back to Home</link></p>")
+print("</body>")
+print("</rwml>")]]
         },
         
         ["lua-api"] = {
