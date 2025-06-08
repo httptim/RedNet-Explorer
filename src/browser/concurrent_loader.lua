@@ -6,7 +6,7 @@ local concurrentLoader = {}
 -- Load dependencies
 local parallel = parallel
 local tabManager = require("src.browser.tab_manager")
-local pageLoader = require("src.client.page_loader")
+-- page_loader functionality is handled internally
 local rwmlRenderer = require("src.content.rwml_renderer")
 local sandbox = require("src.content.sandbox")
 
@@ -161,7 +161,7 @@ function concurrentLoader.fetchPage(url)
     
     -- Handle built-in pages
     if host == "home" then
-        local homePortal = require("src.builtin.home-portal")
+        local homePortal = require("src.builtin.home")
         local content = homePortal.handleRequest({url = path or "/"})
         return true, content, "rwml"
         
@@ -182,7 +182,7 @@ function concurrentLoader.fetchPage(url)
         return true, content, "rwml"
         
     elseif host == "help" then
-        local helpPortal = require("src.builtin.help-portal")
+        local helpPortal = require("src.builtin.help")
         local content = helpPortal.handleRequest({url = path or "/"})
         return true, content, "rwml"
     end
