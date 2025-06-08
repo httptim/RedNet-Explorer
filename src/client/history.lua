@@ -28,8 +28,8 @@ function history.init()
     -- Load existing history
     history.load()
     
-    -- Start autosave
-    history.startAutosave()
+    -- Don't start autosave here - it should be started
+    -- in parallel by the caller
     
     return true
 end
@@ -283,8 +283,9 @@ function history.load()
 end
 
 -- Start autosave
+-- This returns the function to be run in parallel, doesn't block
 function history.startAutosave()
-    local function autosave()
+    return function()
         while true do
             sleep(history.CONFIG.autosaveInterval)
             
@@ -293,9 +294,6 @@ function history.startAutosave()
             end
         end
     end
-    
-    -- Run in parallel
-    parallel.waitForAny(autosave)
 end
 
 -- Navigation helpers

@@ -149,6 +149,32 @@ function browser.run()
         end
     end
     
+    -- Add history autosave
+    if history.startAutosave then
+        local historyAutosave = history.startAutosave()
+        if type(historyAutosave) == "function" then
+            table.insert(tasks, historyAutosave)
+        end
+    end
+    
+    -- Add registry verification service
+    local registry = require("src.dns.registry")
+    if registry.startVerificationService then
+        local verificationService = registry.startVerificationService()
+        if type(verificationService) == "function" then
+            table.insert(tasks, verificationService)
+        end
+    end
+    
+    -- Add resolver dispute handler
+    local resolver = require("src.dns.resolver")
+    if resolver.startDisputeHandler then
+        local disputeHandler = resolver.startDisputeHandler()
+        if type(disputeHandler) == "function" then
+            table.insert(tasks, disputeHandler)
+        end
+    end
+    
     -- Run all tasks in parallel
     parallel.waitForAll(table.unpack(tasks))
     

@@ -33,8 +33,8 @@ local blacklist = {}
 
 -- Initialize resolver
 function resolver.init()
-    -- Start dispute handler
-    resolver.startDisputeHandler()
+    -- Don't start dispute handler here - it should be started
+    -- in parallel by the caller
     
     return true
 end
@@ -316,8 +316,10 @@ function resolver.isRateLimited(peerId)
 end
 
 -- Handle dispute messages
+-- Start dispute handler
+-- This returns the function to be run in parallel, doesn't block
 function resolver.startDisputeHandler()
-    local function handler()
+    return function()
         while true do
             local message, senderId = protocol.receiveMessage(protocol.PROTOCOLS.DNS, 0.1)
             
@@ -353,9 +355,6 @@ function resolver.startDisputeHandler()
             resolver.cleanExpired()
         end
     end
-    
-    -- Run in parallel
-    parallel.waitForAny(handler)
 end
 
 -- Evaluate dispute and decide vote

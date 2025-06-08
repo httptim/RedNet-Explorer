@@ -50,8 +50,8 @@ function registry.init()
     -- Load existing registrations
     registry.load()
     
-    -- Start ownership verification service
-    registry.startVerificationService()
+    -- Don't start verification service here - it should be started
+    -- in parallel by the caller
     
     return true
 end
@@ -284,8 +284,10 @@ function registry.handleChallenge(message, senderId)
 end
 
 -- Start verification service
+-- Start verification service
+-- This returns the function to be run in parallel, doesn't block
 function registry.startVerificationService()
-    local function service()
+    return function()
         while true do
             -- Listen for domain queries and challenges
             local message, senderId = protocol.receiveMessage(protocol.PROTOCOLS.DNS, 0.1)
@@ -324,9 +326,6 @@ function registry.startVerificationService()
             end
         end
     end
-    
-    -- Run in parallel
-    parallel.waitForAny(service)
 end
 
 -- Verify continued ownership of domains
