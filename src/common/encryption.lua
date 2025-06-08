@@ -60,7 +60,7 @@ function encryption.xorCipher(data, key)
     for i = 1, #data do
         local dataByte = string.byte(data, i)
         local keyByte = key[((i - 1) % keyLen) + 1]
-        result[i] = string.char(dataByte ~ keyByte) -- XOR operation
+        result[i] = string.char(bit32.bxor(dataByte, keyByte)) -- XOR operation
     end
     
     return table.concat(result)
