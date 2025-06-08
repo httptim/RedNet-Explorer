@@ -518,15 +518,21 @@ function devPortal.handleRequest(request)
             -- Check if file exists
             if fs.exists(fullPath) then
                 -- Ask for different name
-                return [[<rwml version="1.0">
-                <body bgcolor="black" color="white">
-                    <h1 color="red">File Already Exists</h1>
-                    <p>The file ]] .. fileName .. [[ already exists.</p>
-                    <p>Please choose a different name or edit the existing file.</p>
-                    <p><link url="rdnt://dev-portal/browse">Browse Files</link></p>
-                    <p><link url="rdnt://dev-portal/new">Back</link></p>
-                </body>
-                </rwml>]]
+                return {
+                    status = 200,
+                    headers = {
+                        ["Content-Type"] = "text/rwml"
+                    },
+                    body = [[<rwml version="1.0">
+                    <body bgcolor="black" color="white">
+                        <h1 color="red">File Already Exists</h1>
+                        <p>The file ]] .. fileName .. [[ already exists.</p>
+                        <p>Please choose a different name or edit the existing file.</p>
+                        <p><link url="rdnt://dev-portal/browse">Browse Files</link></p>
+                        <p><link url="rdnt://dev-portal/new">Back</link></p>
+                    </body>
+                    </rwml>]]
+                }
             end
             
             -- Save template
@@ -536,83 +542,125 @@ function devPortal.handleRequest(request)
                 handle.close()
                 
                 -- Redirect to editor
-                return [[<rwml version="1.0">
-                <body bgcolor="black" color="white">
-                    <h1 color="green">File Created</h1>
-                    <p>Created: ]] .. fileName .. [[</p>
-                    <p>Opening editor...</p>
-                    <meta http-equiv="refresh" content="1;url=rdnt://dev-portal/edit?file=]] .. fileName .. [[" />
-                </body>
-                </rwml>]]
+                return {
+                    status = 200,
+                    headers = {
+                        ["Content-Type"] = "text/rwml"
+                    },
+                    body = [[<rwml version="1.0">
+                    <body bgcolor="black" color="white">
+                        <h1 color="green">File Created</h1>
+                        <p>Created: ]] .. fileName .. [[</p>
+                        <p>Opening editor...</p>
+                        <meta http-equiv="refresh" content="1;url=rdnt://dev-portal/edit?file=]] .. fileName .. [[" />
+                    </body>
+                    </rwml>]]
+                }
             end
         end
         
-        return [[<rwml version="1.0">
-        <body bgcolor="black" color="white">
-            <h1 color="red">Error</h1>
-            <p>Invalid template selected.</p>
-            <p><link url="rdnt://dev-portal/new">Back</link></p>
-        </body>
-        </rwml>]]
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = [[<rwml version="1.0">
+            <body bgcolor="black" color="white">
+                <h1 color="red">Error</h1>
+                <p>Invalid template selected.</p>
+                <p><link url="rdnt://dev-portal/new">Back</link></p>
+            </body>
+            </rwml>]]
+        }
         
     -- Site Generator
     elseif path:match("/generator") then
         -- Launch site generator in terminal mode
-        return [[<rwml version="1.0">
-        <body bgcolor="black" color="white">
-            <h1>Site Generator</h1>
-            <p>The Site Generator provides a complete workflow for creating and managing projects.</p>
-            <p>It opens in terminal mode for the best experience.</p>
-            <p>Run: <code>dev-portal generator</code></p>
-            <p><link url="rdnt://dev-portal">Back to Portal</link></p>
-        </body>
-        </rwml>]]
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = [[<rwml version="1.0">
+            <body bgcolor="black" color="white">
+                <h1>Site Generator</h1>
+                <p>The Site Generator provides a complete workflow for creating and managing projects.</p>
+                <p>It opens in terminal mode for the best experience.</p>
+                <p>Run: <code>dev-portal generator</code></p>
+                <p><link url="rdnt://dev-portal">Back to Portal</link></p>
+            </body>
+            </rwml>]]
+        }
         
     -- Browse files
     elseif path:match("/browse") then
         -- This would launch the file manager in terminal mode
-        return [[<rwml version="1.0">
-        <body bgcolor="black" color="white">
-            <h1>File Browser</h1>
-            <p>The file browser opens in terminal mode.</p>
-            <p>Run: <code>dev-portal browse</code></p>
-            <p><link url="rdnt://dev-portal">Back to Portal</link></p>
-        </body>
-        </rwml>]]
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = [[<rwml version="1.0">
+            <body bgcolor="black" color="white">
+                <h1>File Browser</h1>
+                <p>The file browser opens in terminal mode.</p>
+                <p>Run: <code>dev-portal browse</code></p>
+                <p><link url="rdnt://dev-portal">Back to Portal</link></p>
+            </body>
+            </rwml>]]
+        }
         
     -- Edit file
     elseif path:match("/edit") then
         local fileName = params.file
         if fileName then
             -- This would launch the editor in terminal mode
-            return [[<rwml version="1.0">
-            <body bgcolor="black" color="white">
-                <h1>Opening Editor</h1>
-                <p>Editing: ]] .. fileName .. [[</p>
-                <p>The editor opens in terminal mode.</p>
-                <p>Run: <code>dev-portal edit ]] .. fileName .. [[</code></p>
-                <p><link url="rdnt://dev-portal">Back to Portal</link></p>
-            </body>
-            </rwml>]]
+            return {
+                status = 200,
+                headers = {
+                    ["Content-Type"] = "text/rwml"
+                },
+                body = [[<rwml version="1.0">
+                <body bgcolor="black" color="white">
+                    <h1>Opening Editor</h1>
+                    <p>Editing: ]] .. fileName .. [[</p>
+                    <p>The editor opens in terminal mode.</p>
+                    <p>Run: <code>dev-portal edit ]] .. fileName .. [[</code></p>
+                    <p><link url="rdnt://dev-portal">Back to Portal</link></p>
+                </body>
+                </rwml>]]
+            }
         else
-            return [[<rwml version="1.0">
-            <body bgcolor="black" color="white">
-                <h1>Select File</h1>
-                <p>Please select a file to edit from the main menu.</p>
-                <p><link url="rdnt://dev-portal">Back to Portal</link></p>
-            </body>
-            </rwml>]]
+            return {
+                status = 200,
+                headers = {
+                    ["Content-Type"] = "text/rwml"
+                },
+                body = [[<rwml version="1.0">
+                <body bgcolor="black" color="white">
+                    <h1>Select File</h1>
+                    <p>Please select a file to edit from the main menu.</p>
+                    <p><link url="rdnt://dev-portal">Back to Portal</link></p>
+                </body>
+                </rwml>]]
+            }
         end
         
     else
         -- 404
-        return [[<rwml version="1.0">
-        <body bgcolor="black" color="white">
-            <h1 color="red">Page Not Found</h1>
-            <p>The requested page was not found.</p>
-            <p><link url="rdnt://dev-portal">Back to Portal</link></p>
-        </body>
-        </rwml>]]
+        return {
+            status = 404,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = [[<rwml version="1.0">
+            <body bgcolor="black" color="white">
+                <h1 color="red">Page Not Found</h1>
+                <p>The requested page was not found.</p>
+                <p><link url="rdnt://dev-portal">Back to Portal</link></p>
+            </body>
+            </rwml>]]
+        }
     end
 end
 
