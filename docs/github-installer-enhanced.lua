@@ -7,93 +7,147 @@ local REPO_NAME = "RedNet-Explorer"
 local BRANCH = "main"
 local INSTALL_DIR = "/rednet-explorer"
 
--- File manifest for RedNet-Explorer
+-- Error tracking
+local errorLog = {}
+local failedFiles = 0
+
+-- File manifest for RedNet-Explorer (96 files total)
 local FILES = {
     -- Main files
     {url = "rednet-explorer.lua", path = "/rednet-explorer.lua"},
     
-    -- Client files
-    {url = "src/client/browser.lua", path = "/rednet-explorer/client/browser.lua"},
-    {url = "src/client/ui.lua", path = "/rednet-explorer/client/ui.lua"},
-    {url = "src/client/renderer.lua", path = "/rednet-explorer/client/renderer.lua"},
-    {url = "src/client/navigation.lua", path = "/rednet-explorer/client/navigation.lua"},
-    {url = "src/client/history.lua", path = "/rednet-explorer/client/history.lua"},
-    {url = "src/client/bookmarks.lua", path = "/rednet-explorer/client/bookmarks.lua"},
+    -- Common modules
+    {url = "src/common/protocol.lua", path = "/src/common/protocol.lua"},
+    {url = "src/common/encryption.lua", path = "/src/common/encryption.lua"},
+    {url = "src/common/connection.lua", path = "/src/common/connection.lua"},
+    {url = "src/common/discovery.lua", path = "/src/common/discovery.lua"},
     
-    -- Server files
-    {url = "src/server/server.lua", path = "/rednet-explorer/server/server.lua"},
-    {url = "src/server/request_handler.lua", path = "/rednet-explorer/server/request_handler.lua"},
-    {url = "src/server/static_server.lua", path = "/rednet-explorer/server/static_server.lua"},
-    {url = "src/server/dynamic_server.lua", path = "/rednet-explorer/server/dynamic_server.lua"},
-    {url = "src/server/sandbox.lua", path = "/rednet-explorer/server/sandbox.lua"},
-    {url = "src/server/mime_types.lua", path = "/rednet-explorer/server/mime_types.lua"},
+    -- DNS modules
+    {url = "src/dns/init.lua", path = "/src/dns/init.lua"},
+    {url = "src/dns/dns.lua", path = "/src/dns/dns.lua"},
+    {url = "src/dns/cache.lua", path = "/src/dns/cache.lua"},
+    {url = "src/dns/resolver.lua", path = "/src/dns/resolver.lua"},
+    {url = "src/dns/registry.lua", path = "/src/dns/registry.lua"},
     
-    -- Common files
-    {url = "src/common/protocol.lua", path = "/rednet-explorer/common/protocol.lua"},
-    {url = "src/common/connection.lua", path = "/rednet-explorer/common/connection.lua"},
-    {url = "src/common/discovery.lua", path = "/rednet-explorer/common/discovery.lua"},
-    {url = "src/common/encryption.lua", path = "/rednet-explorer/common/encryption.lua"},
-    {url = "src/common/utils.lua", path = "/rednet-explorer/common/utils.lua"},
+    -- Client modules
+    {url = "src/client/browser.lua", path = "/src/client/browser.lua"},
+    {url = "src/client/navigation.lua", path = "/src/client/navigation.lua"},
+    {url = "src/client/history.lua", path = "/src/client/history.lua"},
+    {url = "src/client/bookmarks.lua", path = "/src/client/bookmarks.lua"},
+    {url = "src/client/renderer.lua", path = "/src/client/renderer.lua"},
+    {url = "src/client/ui.lua", path = "/src/client/ui.lua"},
     
-    -- DNS files
-    {url = "src/dns/init.lua", path = "/rednet-explorer/dns/init.lua"},
-    {url = "src/dns/dns.lua", path = "/rednet-explorer/dns/dns.lua"},
-    {url = "src/dns/cache.lua", path = "/rednet-explorer/dns/cache.lua"},
-    {url = "src/dns/resolver.lua", path = "/rednet-explorer/dns/resolver.lua"},
-    {url = "src/dns/registry.lua", path = "/rednet-explorer/dns/registry.lua"},
+    -- Server modules
+    {url = "src/server/server.lua", path = "/src/server/server.lua"},
+    {url = "src/server/fileserver.lua", path = "/src/server/fileserver.lua"},
+    {url = "src/server/handler.lua", path = "/src/server/handler.lua"},
+    {url = "src/server/config.lua", path = "/src/server/config.lua"},
+    {url = "src/server/logger.lua", path = "/src/server/logger.lua"},
     
-    -- Content files
-    {url = "src/content/rwml.lua", path = "/rednet-explorer/content/rwml.lua"},
-    {url = "src/content/lexer.lua", path = "/rednet-explorer/content/lexer.lua"},
-    {url = "src/content/parser.lua", path = "/rednet-explorer/content/parser.lua"},
-    {url = "src/content/rwml_renderer.lua", path = "/rednet-explorer/content/rwml_renderer.lua"},
+    -- Content modules
+    {url = "src/content/rwml.lua", path = "/src/content/rwml.lua"},
+    {url = "src/content/lexer.lua", path = "/src/content/lexer.lua"},
+    {url = "src/content/parser.lua", path = "/src/content/parser.lua"},
+    {url = "src/content/rwml_renderer.lua", path = "/src/content/rwml_renderer.lua"},
+    {url = "src/content/sandbox.lua", path = "/src/content/sandbox.lua"},
     
-    -- Search files
-    {url = "src/search/engine.lua", path = "/rednet-explorer/search/engine.lua"},
-    {url = "src/search/indexer.lua", path = "/rednet-explorer/search/indexer.lua"},
-    {url = "src/search/crawler.lua", path = "/rednet-explorer/search/crawler.lua"},
+    -- Built-in websites
+    {url = "src/builtin/init.lua", path = "/src/builtin/init.lua"},
+    {url = "src/builtin/home.lua", path = "/src/builtin/home.lua"},
+    {url = "src/builtin/settings.lua", path = "/src/builtin/settings.lua"},
+    {url = "src/builtin/help.lua", path = "/src/builtin/help.lua"},
+    {url = "src/builtin/dev-portal.lua", path = "/src/builtin/dev-portal.lua"},
+    {url = "src/builtin/google-portal.lua", path = "/src/builtin/google-portal.lua"},
     
-    -- UI files
-    {url = "src/ui/theme_manager.lua", path = "/rednet-explorer/ui/theme_manager.lua"},
+    -- Development tools
+    {url = "src/devtools/editor.lua", path = "/src/devtools/editor.lua"},
+    {url = "src/devtools/filemanager.lua", path = "/src/devtools/filemanager.lua"},
+    {url = "src/devtools/preview.lua", path = "/src/devtools/preview.lua"},
+    {url = "src/devtools/templates.lua", path = "/src/devtools/templates.lua"},
+    {url = "src/devtools/template_wizard.lua", path = "/src/devtools/template_wizard.lua"},
+    {url = "src/devtools/assets.lua", path = "/src/devtools/assets.lua"},
+    {url = "src/devtools/site_generator.lua", path = "/src/devtools/site_generator.lua"},
     
-    -- Built-in sites
-    {url = "src/builtin/init.lua", path = "/rednet-explorer/builtin/init.lua"},
-    {url = "src/builtin/home.lua", path = "/rednet-explorer/builtin/home.lua"},
-    {url = "src/builtin/help.lua", path = "/rednet-explorer/builtin/help.lua"},
-    {url = "src/builtin/settings.lua", path = "/rednet-explorer/builtin/settings.lua"},
-    {url = "src/builtin/google-portal.lua", path = "/rednet-explorer/builtin/google-portal.lua"},
-    {url = "src/builtin/dev-portal.lua", path = "/rednet-explorer/builtin/dev-portal.lua"},
+    -- Search engine
+    {url = "src/search/engine.lua", path = "/src/search/engine.lua"},
+    {url = "src/search/index.lua", path = "/src/search/index.lua"},
+    {url = "src/search/crawler.lua", path = "/src/search/crawler.lua"},
+    {url = "src/search/api.lua", path = "/src/search/api.lua"},
     
-    -- DevTools
-    {url = "src/devtools/generator.lua", path = "/rednet-explorer/devtools/generator.lua"},
-    {url = "src/devtools/templates.lua", path = "/rednet-explorer/devtools/templates.lua"},
+    -- Multi-tab browser
+    {url = "src/browser/multi_tab_browser.lua", path = "/src/browser/multi_tab_browser.lua"},
+    {url = "src/browser/tab_manager.lua", path = "/src/browser/tab_manager.lua"},
+    {url = "src/browser/concurrent_loader.lua", path = "/src/browser/concurrent_loader.lua"},
+    {url = "src/browser/tab_state.lua", path = "/src/browser/tab_state.lua"},
+    {url = "src/browser/resource_manager.lua", path = "/src/browser/resource_manager.lua"},
+    
+    -- Form processing
+    {url = "src/forms/form_parser.lua", path = "/src/forms/form_parser.lua"},
+    {url = "src/forms/form_renderer.lua", path = "/src/forms/form_renderer.lua"},
+    {url = "src/forms/form_validator.lua", path = "/src/forms/form_validator.lua"},
+    {url = "src/forms/form_processor.lua", path = "/src/forms/form_processor.lua"},
+    {url = "src/forms/session_manager.lua", path = "/src/forms/session_manager.lua"},
+    
+    -- Media support
+    {url = "src/media/image_loader.lua", path = "/src/media/image_loader.lua"},
+    {url = "src/media/image_renderer.lua", path = "/src/media/image_renderer.lua"},
+    {url = "src/media/download_manager.lua", path = "/src/media/download_manager.lua"},
+    {url = "src/media/asset_cache.lua", path = "/src/media/asset_cache.lua"},
+    {url = "src/media/progressive_loader.lua", path = "/src/media/progressive_loader.lua"},
+    
+    -- Security
+    {url = "src/security/permission_system.lua", path = "/src/security/permission_system.lua"},
+    {url = "src/security/content_scanner.lua", path = "/src/security/content_scanner.lua"},
+    {url = "src/security/network_guard.lua", path = "/src/security/network_guard.lua"},
+    
+    -- Performance
+    {url = "src/performance/memory_manager.lua", path = "/src/performance/memory_manager.lua"},
+    {url = "src/performance/network_optimizer.lua", path = "/src/performance/network_optimizer.lua"},
+    {url = "src/performance/search_cache.lua", path = "/src/performance/search_cache.lua"},
+    {url = "src/performance/benchmark.lua", path = "/src/performance/benchmark.lua"},
+    
+    -- UI enhancements
+    {url = "src/ui/theme_manager.lua", path = "/src/ui/theme_manager.lua"},
+    {url = "src/ui/accessibility.lua", path = "/src/ui/accessibility.lua"},
+    {url = "src/ui/mobile_adapter.lua", path = "/src/ui/mobile_adapter.lua"},
+    {url = "src/ui/enhancements.lua", path = "/src/ui/enhancements.lua"},
+    
+    -- Admin tools
+    {url = "src/admin/dashboard.lua", path = "/src/admin/dashboard.lua"},
+    {url = "src/admin/network_monitor.lua", path = "/src/admin/network_monitor.lua"},
+    {url = "src/admin/moderation.lua", path = "/src/admin/moderation.lua"},
+    {url = "src/admin/analytics.lua", path = "/src/admin/analytics.lua"},
+    {url = "src/admin/backup.lua", path = "/src/admin/backup.lua"},
+    
+    -- Admin launcher
+    {url = "rdnt-admin", path = "/rdnt-admin"},
+    
+    -- Test framework
+    {url = "tests/test_framework.lua", path = "/tests/test_framework.lua"},
 }
 
 -- Directories to create
 local DIRECTORIES = {
-    "/rednet-explorer",
-    "/rednet-explorer/client",
-    "/rednet-explorer/server",
-    "/rednet-explorer/common",
-    "/rednet-explorer/dns",
-    "/rednet-explorer/content",
-    "/rednet-explorer/search",
-    "/rednet-explorer/ui",
-    "/rednet-explorer/builtin",
-    "/rednet-explorer/devtools",
-    "/rednet-explorer/websites",
-    "/rednet-explorer/data",
+    "/src", "/src/common", "/src/dns", "/src/client", "/src/server",
+    "/src/content", "/src/builtin", "/src/devtools", "/src/search",
+    "/src/browser", "/src/forms", "/src/media", "/src/security",
+    "/src/performance", "/src/ui", "/src/admin",
+    "/tests", "/examples", "/examples/rwml", "/examples/lua-sites",
+    "/templates", "/tools", "/docs", "/websites", "/cache",
+    "/admin", "/admin/logs", "/admin/backups"
 }
 
 -- Launcher scripts
 local LAUNCHERS = {
     {
-        name = "rdnt-browser",
-        content = [[shell.run("/rednet-explorer.lua", "browser")]]
+        name = "rdnt",
+        content = [[-- RedNet-Explorer Browser Launcher
+shell.run("rednet-explorer", "browser")]]
     },
     {
         name = "rdnt-server",
-        content = [[shell.run("/rednet-explorer.lua", "server")]]
+        content = [[-- RedNet-Explorer Server Launcher
+shell.run("rednet-explorer", "server")]]
     },
 }
 
@@ -368,6 +422,12 @@ end
 
 -- Download file with animated progress
 local function downloadFile(fileInfo, index, total)
+    -- Create directory if needed
+    local dir = fs.getDir(fileInfo.path)
+    if dir ~= "" and not fs.exists(dir) then
+        fs.makeDir(dir)
+    end
+    
     -- Simulate progressive download with animated bar
     for i = 0, 10 do
         local progress = i / 10
@@ -380,20 +440,37 @@ local function downloadFile(fileInfo, index, total)
         REPO_OWNER, REPO_NAME, BRANCH, fileInfo.url
     )
     
-    local response = http.get(url)
+    -- Determine if binary file
+    local isBinary = fileInfo.url:match("%.nfp$") or fileInfo.url:match("%.png$") or fileInfo.url:match("%.gif$")
+    
+    local response, httpError = http.get(url, nil, isBinary)
     if not response then
-        local errorMsg = string.format("         └─ ✗ Failed to download", colors.error)
+        local errorMsg = string.format("         └─ ✗ Failed: %s", httpError or "Unknown error")
         addScrollLine(errorMsg, colors.error, "progress_" .. index)
+        table.insert(errorLog, {
+            file = fileInfo.url,
+            path = fileInfo.path,
+            error = httpError or "Failed to download",
+            timestamp = os.date("%Y-%m-%d %H:%M:%S")
+        })
+        failedFiles = failedFiles + 1
         return false, "Failed to download: " .. fileInfo.url
     end
     
     local content = response.readAll()
     response.close()
     
-    local file = fs.open(fileInfo.path, "w")
+    local file = fs.open(fileInfo.path, isBinary and "wb" or "w")
     if not file then
-        local errorMsg = string.format("         └─ ✗ Failed to write file", colors.error)
+        local errorMsg = string.format("         └─ ✗ Failed to write file")
         addScrollLine(errorMsg, colors.error, "progress_" .. index)
+        table.insert(errorLog, {
+            file = fileInfo.url,
+            path = fileInfo.path,
+            error = "Failed to write file",
+            timestamp = os.date("%Y-%m-%d %H:%M:%S")
+        })
+        failedFiles = failedFiles + 1
         return false, "Failed to write: " .. fileInfo.path
     end
     
@@ -441,12 +518,15 @@ local function install()
     
     -- Download files
     local total = #FILES
+    local successCount = 0
+    
     for i, fileInfo in ipairs(FILES) do
         local success, err = downloadFile(fileInfo, i, total)
-        if not success then
-            addScrollLine("✗ Installation failed: " .. err, colors.error)
-            sleep(3)
-            return false
+        if success then
+            successCount = successCount + 1
+        else
+            -- Continue with next file instead of stopping
+            addScrollLine("✗ Error: " .. err, colors.error)
         end
     end
     
@@ -459,15 +539,49 @@ local function install()
             file.write(launcher.content)
             file.close()
             addScrollLine("  ✓ Created " .. launcher.name, colors.success)
+        else
+            addScrollLine("  ✗ Failed to create " .. launcher.name, colors.error)
+            failedFiles = failedFiles + 1
         end
     end
     
+    -- Final status
     addScrollLine("", colors.text)
-    addScrollLine("✓ Installation complete!", colors.success)
-    addScrollLine("Run 'rdnt-browser' to start!", colors.success)
+    if failedFiles > 0 then
+        addScrollLine(string.format("✗ Installation completed with %d errors", failedFiles), colors.error)
+        addScrollLine("See /install-errors.log for details", colors.warning)
+        
+        -- Save error log
+        local logFile = fs.open("/install-errors.log", "w")
+        if logFile then
+            logFile.writeLine("RedNet-Explorer Installation Error Log")
+            logFile.writeLine("Generated: " .. os.date("%Y-%m-%d %H:%M:%S"))
+            logFile.writeLine("Total errors: " .. failedFiles)
+            logFile.writeLine(string.rep("=", 50))
+            logFile.writeLine("")
+            
+            for _, error in ipairs(errorLog) do
+                logFile.writeLine("File: " .. error.file)
+                logFile.writeLine("Path: " .. error.path)
+                logFile.writeLine("Error: " .. error.error)
+                logFile.writeLine("Time: " .. error.timestamp)
+                logFile.writeLine(string.rep("-", 30))
+                logFile.writeLine("")
+            end
+            
+            logFile.close()
+        end
+    else
+        addScrollLine("✓ Installation complete!", colors.success)
+        addScrollLine(string.format("Successfully installed %d files", successCount), colors.success)
+    end
     
-    sleep(3)
-    return true
+    addScrollLine("", colors.text)
+    addScrollLine("Run 'rdnt' to start the browser!", colors.success)
+    addScrollLine("Run 'rdnt-server' to start a server!", colors.success)
+    
+    sleep(5)
+    return failedFiles == 0
 end
 
 -- Run installer
