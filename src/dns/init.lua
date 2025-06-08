@@ -18,30 +18,35 @@ function dnsSystem.init()
         return true, "Already initialized"
     end
     
+    print("    DNS: Initializing cache...")
     -- Initialize cache first (needed by DNS)
     local success, err = pcall(cache.init)
     if not success then
         return false, "Failed to initialize cache: " .. tostring(err)
     end
     
+    print("    DNS: Initializing core DNS...")
     -- Initialize core DNS
     success, err = pcall(dns.init)
     if not success then
         return false, "Failed to initialize DNS: " .. tostring(err)
     end
     
+    print("    DNS: Initializing registry...")
     -- Initialize registry
     success, err = pcall(registry.init)
     if not success then
         return false, "Failed to initialize registry: " .. tostring(err)
     end
     
+    print("    DNS: Initializing resolver...")
     -- Initialize resolver
     success, err = pcall(resolver.init)
     if not success then
         return false, "Failed to initialize resolver: " .. tostring(err)
     end
     
+    print("    DNS: All components initialized!")
     initialized = true
     return true
 end
