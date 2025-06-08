@@ -11,6 +11,50 @@ local INSTALL_DIR = "/rednet-explorer"
 local errorLog = {}
 local failedFiles = 0
 
+-- System requirements
+local REQUIRED_SPACE = 100000   -- 100KB minimum free space buffer
+
+-- Installation statistics
+local stats = {
+    startTime = 0,
+    bytesDownloaded = 0,
+    retries = 0,
+    totalSize = 0
+}
+
+-- Progress tracking for resume capability
+local PROGRESS_FILE = "/.install-progress"
+local installedFiles = {}
+
+-- Load previous progress if exists
+local function loadProgress()
+    if fs.exists(PROGRESS_FILE) then
+        local file = fs.open(PROGRESS_FILE, "r")
+        if file then
+            local data = file.readAll()
+            file.close()
+            local progress = textutils.unserialize(data)
+            if progress and progress.repo == REPO_NAME then
+                return progress.files or {}
+            end
+        end
+    end
+    return {}
+end
+
+-- Save progress
+local function saveProgress()
+    local file = fs.open(PROGRESS_FILE, "w")
+    if file then
+        file.write(textutils.serialize({
+            repo = REPO_NAME,
+            files = installedFiles,
+            timestamp = os.date()
+        }))
+        file.close()
+    end
+end
+
 -- File manifest for RedNet-Explorer (96 files total)
 local FILES = {
     -- Main files
@@ -428,6 +472,12 @@ local function downloadFile(fileInfo, index, total)
         fs.makeDir(dir)
     end
     
+    -- Memory management - yield periodically
+    if index % 5 == 0 then
+        os.queueEvent("installer_yield")
+        os.pullEvent("installer_yield")
+    end
+    
     -- Simulate progressive download with animated bar
     for i = 0, 10 do
         local progress = i / 10
@@ -443,7 +493,24 @@ local function downloadFile(fileInfo, index, total)
     -- Determine if binary file
     local isBinary = fileInfo.url:match("%.nfp$") or fileInfo.url:match("%.png$") or fileInfo.url:match("%.gif$")
     
-    local response, httpError = http.get(url, nil, isBinary)
+    -- Retry logic for network failures
+    local maxRetries = 3
+    local response, httpError
+    
+    for attempt = 1, maxRetries do
+        response, httpError = http.get(url, nil, isBinary)
+        if response then
+            break
+        else
+            stats.retries = stats.retries + 1
+            if attempt < maxRetries then
+                local retryMsg = string.format("         └─ Retry %d/%d...", attempt, maxRetries-1)
+                addScrollLine(retryMsg, colors.warning, "progress_" .. index)
+                sleep(1)  -- Wait before retry
+            end
+        end
+    end
+    
     if not response then
         local errorMsg = string.format("         └─ ✗ Failed: %s", httpError or "Unknown error")
         addScrollLine(errorMsg, colors.error, "progress_" .. index)
@@ -459,6 +526,9 @@ local function downloadFile(fileInfo, index, total)
     
     local content = response.readAll()
     response.close()
+    
+    -- Track download size
+    stats.bytesDownloaded = stats.bytesDownloaded + #content
     
     local file = fs.open(fileInfo.path, isBinary and "wb" or "w")
     if not file then
@@ -480,7 +550,117 @@ local function downloadFile(fileInfo, index, total)
     -- Show completion
     completeFileDownload(index, total, fileInfo)
     
+    -- Mark as installed
+    installedFiles[fileInfo.path] = true
+    saveProgress()
+    
     return true
+end
+
+-- Estimate file sizes based on file type and typical sizes
+local function estimateFileSize(filename)
+    -- Based on file extension and typical sizes in the project
+    if filename:match("%.lua$") then
+        -- Lua files in this project typically range from 2KB to 20KB
+        if filename:match("template") or filename:match("portal") then
+            return 15000  -- Templates tend to be larger
+        elseif filename:match("init%.lua$") then
+            return 3000   -- Init files are usually small
+        else
+            return 8000   -- Average Lua file
+        end
+    elseif filename:match("%.md$") then
+        return 5000       -- Markdown files
+    elseif filename:match("%.json$") then
+        return 2000       -- JSON files
+    elseif filename:match("%.nfp$") or filename:match("%.png$") then
+        return 20000      -- Image files
+    else
+        return 5000       -- Default estimate
+    end
+end
+
+-- Calculate total installation size
+local function calculateTotalSize()
+    addScrollLine("Estimating installation size...", colors.text)
+    local totalSize = 0
+    
+    -- Calculate based on file types
+    for _, fileInfo in ipairs(FILES) do
+        local size = estimateFileSize(fileInfo.url)
+        totalSize = totalSize + size
+    end
+    
+    -- Add some buffer for overhead
+    totalSize = totalSize * 1.1  -- 10% overhead
+    
+    stats.totalSize = totalSize
+    addScrollLine(string.format("Estimated total: %.2f KB", totalSize/1024), colors.text)
+    
+    -- More accurate method: Try to get actual sizes for a few files
+    addScrollLine("Getting accurate size (this may take a moment)...", colors.text)
+    
+    -- GitHub API endpoint for repository info (if available)
+    -- This would give us accurate sizes but requires API access
+    -- For now, we'll stick with estimates
+    
+    return totalSize, {}
+end
+
+-- Check system requirements
+local function checkRequirements(totalSize)
+    local issues = {}
+    
+    -- Check HTTP API
+    if not http then
+        table.insert(issues, {type = "critical", msg = "HTTP API is not enabled"})
+    end
+    
+    -- Check disk space
+    local freeSpace = fs.getFreeSpace("/")
+    local estimatedNeeded = REQUIRED_SPACE + (totalSize or (#FILES * 10240))
+    
+    if freeSpace < estimatedNeeded then
+        table.insert(issues, {
+            type = "critical", 
+            msg = string.format("Insufficient disk space. Need ~%dKB, have %dKB", 
+                estimatedNeeded/1024, freeSpace/1024)
+        })
+    elseif freeSpace < estimatedNeeded * 1.5 then
+        table.insert(issues, {
+            type = "warning", 
+            msg = string.format("Low disk space. Only %dKB free", freeSpace/1024)
+        })
+    end
+    
+    -- Check for wireless modem (warning only)
+    local hasModem = false
+    for _, side in ipairs(peripheral.getNames()) do
+        if peripheral.getType(side) == "modem" then
+            local modem = peripheral.wrap(side)
+            if modem.isWireless and modem.isWireless() then
+                hasModem = true
+                break
+            end
+        end
+    end
+    
+    if not hasModem then
+        table.insert(issues, {
+            type = "warning",
+            msg = "No wireless modem found (required for RedNet)"
+        })
+    end
+    
+    -- Check color support
+    if not term.isColor() then
+        table.insert(issues, {
+            type = "warning",
+            msg = "No color support (works better on Advanced Computers)"
+        })
+    end
+    
+    return issues
 end
 
 -- Main installation
@@ -490,16 +670,49 @@ local function install()
     -- Initialize scroll window
     initScrollWindow()
     
-    -- Check HTTP
-    if not http then
-        addScrollLine("✗ HTTP API is not enabled", colors.error)
-        sleep(2)
+    -- Calculate installation size
+    local totalSize, sizeCache = calculateTotalSize()
+    addScrollLine(string.format("Total installation size: ~%.2f KB", totalSize/1024), colors.text)
+    addScrollLine("", colors.text)
+    
+    -- Check system requirements
+    addScrollLine("Checking system requirements...", colors.warning)
+    local issues = checkRequirements(totalSize)
+    
+    local hasCritical = false
+    for _, issue in ipairs(issues) do
+        if issue.type == "critical" then
+            hasCritical = true
+            addScrollLine("✗ " .. issue.msg, colors.error)
+        else
+            addScrollLine("⚠ " .. issue.msg, colors.warning)
+        end
+    end
+    
+    if hasCritical then
+        addScrollLine("", colors.text)
+        addScrollLine("Cannot continue due to critical issues", colors.error)
+        sleep(3)
         return false
     end
     
+    if #issues > 0 then
+        addScrollLine("", colors.text)
+        addScrollLine("Press any key to continue anyway...", colors.text)
+        os.pullEvent("key")
+    else
+        addScrollLine("✓ All requirements met", colors.success)
+    end
+    
+    -- Show installation info
+    addScrollLine("", colors.text)
     addScrollLine("Starting installation...", colors.text)
     addScrollLine("Repository: " .. REPO_OWNER .. "/" .. REPO_NAME, colors.text)
     addScrollLine("Branch: " .. BRANCH, colors.text)
+    addScrollLine(string.format("Files to install: %d", #FILES), colors.text)
+    if stats.totalSize > 0 then
+        addScrollLine(string.format("Estimated size: %.2f KB", stats.totalSize/1024), colors.text)
+    end
     addScrollLine("", colors.text)
     
     -- Create directories
@@ -516,19 +729,62 @@ local function install()
     addScrollLine("", colors.text)
     addScrollLine("Downloading files...", colors.warning)
     
-    -- Download files
-    local total = #FILES
-    local successCount = 0
-    
-    for i, fileInfo in ipairs(FILES) do
-        local success, err = downloadFile(fileInfo, i, total)
-        if success then
-            successCount = successCount + 1
-        else
-            -- Continue with next file instead of stopping
-            addScrollLine("✗ Error: " .. err, colors.error)
+    -- Check for previous installation progress
+    installedFiles = loadProgress()
+    local skipCount = 0
+    if next(installedFiles) then
+        for path, _ in pairs(installedFiles) do
+            if fs.exists(path) then
+                skipCount = skipCount + 1
+            end
+        end
+        if skipCount > 0 then
+            addScrollLine(string.format("Found %d previously installed files", skipCount), colors.warning)
+            addScrollLine("Resuming installation...", colors.text)
+            addScrollLine("", colors.text)
         end
     end
+    
+    -- Download files
+    local total = #FILES
+    local successCount = skipCount
+    local startTime = os.epoch("utc")
+    stats.startTime = startTime
+    
+    for i, fileInfo in ipairs(FILES) do
+        -- Skip if already installed
+        if installedFiles[fileInfo.path] and fs.exists(fileInfo.path) then
+            showProgress(i, total, fileInfo, 1)
+            completeFileDownload(i, total, fileInfo)
+            successCount = successCount + 1
+        else
+            -- Check disk space periodically
+            if i % 10 == 0 then
+                local freeSpace = fs.getFreeSpace("/")
+                if freeSpace < 50000 then  -- Less than 50KB
+                    addScrollLine("✗ Out of disk space!", colors.error)
+                    table.insert(errorLog, {
+                        file = "SYSTEM",
+                        path = "N/A",
+                        error = "Out of disk space",
+                        timestamp = os.date("%Y-%m-%d %H:%M:%S")
+                    })
+                    break
+                end
+            end
+            
+            local success, err = downloadFile(fileInfo, i, total)
+            if success then
+                successCount = successCount + 1
+            else
+                -- Continue with next file instead of stopping
+                addScrollLine("✗ Error: " .. err, colors.error)
+            end
+        end
+    end
+    
+    local endTime = os.epoch("utc")
+    local duration = (endTime - startTime) / 1000
     
     -- Create launchers
     addScrollLine("", colors.text)
@@ -557,6 +813,9 @@ local function install()
             logFile.writeLine("RedNet-Explorer Installation Error Log")
             logFile.writeLine("Generated: " .. os.date("%Y-%m-%d %H:%M:%S"))
             logFile.writeLine("Total errors: " .. failedFiles)
+            logFile.writeLine(string.format("Installation time: %.2f seconds", duration))
+            logFile.writeLine(string.format("Total downloaded: %.2f KB", stats.bytesDownloaded/1024))
+            logFile.writeLine(string.format("Network retries: %d", stats.retries))
             logFile.writeLine(string.rep("=", 50))
             logFile.writeLine("")
             
@@ -573,18 +832,131 @@ local function install()
         end
     else
         addScrollLine("✓ Installation complete!", colors.success)
-        addScrollLine(string.format("Successfully installed %d files", successCount), colors.success)
+        addScrollLine(string.format("Successfully installed %d files in %.2f seconds", successCount, duration), colors.success)
     end
+    
+    -- Show installation statistics
+    addScrollLine("", colors.text)
+    addScrollLine("Installation Statistics:", colors.text)
+    addScrollLine(string.format("  Downloaded: %.2f KB", stats.bytesDownloaded/1024), colors.text)
+    if stats.totalSize > 0 then
+        local efficiency = (stats.bytesDownloaded / stats.totalSize) * 100
+        addScrollLine(string.format("  Size accuracy: %.1f%%", efficiency), colors.text)
+    end
+    addScrollLine(string.format("  Average speed: %.2f KB/s", (stats.bytesDownloaded/1024)/duration), colors.text)
+    if stats.retries > 0 then
+        addScrollLine(string.format("  Network retries: %d", stats.retries), colors.warning)
+    end
+    
+    -- Show final disk space
+    local finalSpace = fs.getFreeSpace("/")
+    addScrollLine(string.format("  Disk space remaining: %d KB", finalSpace/1024), colors.text)
     
     addScrollLine("", colors.text)
     addScrollLine("Run 'rdnt' to start the browser!", colors.success)
     addScrollLine("Run 'rdnt-server' to start a server!", colors.success)
     
+    -- Clean up progress file on successful completion
+    if failedFiles == 0 and fs.exists(PROGRESS_FILE) then
+        fs.delete(PROGRESS_FILE)
+    end
+    
+    -- Create configuration file if it doesn't exist
+    if not fs.exists("/config.json") then
+        local config = {
+            browser = {
+                homepage = "rdnt://home",
+                enableCache = true,
+                enableJavaScript = true,
+                theme = "default"
+            },
+            server = {
+                documentRoot = "/websites",
+                port = 80,
+                enableLogging = true
+            },
+            admin = {
+                password = nil
+            }
+        }
+        
+        local configFile = fs.open("/config.json", "w")
+        if configFile then
+            configFile.write(textutils.serializeJSON(config))
+            configFile.close()
+        end
+    end
+    
     sleep(5)
     return failedFiles == 0
 end
 
--- Run installer
-install()
-term.setCursorPos(1, height)
-print("")
+-- Clean up existing installation (optional)
+local function cleanInstall()
+    if fs.exists("/rednet-explorer.lua") or fs.exists("/src") then
+        addScrollLine("Existing installation found", colors.warning)
+        addScrollLine("Press Y to remove and do clean install", colors.text)
+        addScrollLine("Press N to cancel", colors.text)
+        
+        while true do
+            local _, key = os.pullEvent("key")
+            if key == keys.y then
+                addScrollLine("Removing old installation...", colors.warning)
+                
+                -- Remove files
+                if fs.exists("/rednet-explorer.lua") then fs.delete("/rednet-explorer.lua") end
+                if fs.exists("/src") then fs.delete("/src") end
+                if fs.exists("/tests") then fs.delete("/tests") end
+                if fs.exists("/rdnt") then fs.delete("/rdnt") end
+                if fs.exists("/rdnt-server") then fs.delete("/rdnt-server") end
+                if fs.exists("/rdnt-admin") then fs.delete("/rdnt-admin") end
+                if fs.exists(PROGRESS_FILE) then fs.delete(PROGRESS_FILE) end
+                
+                addScrollLine("✓ Old installation removed", colors.success)
+                return true
+            elseif key == keys.n then
+                return false
+            end
+        end
+    end
+    return true
+end
+
+-- Run installer with error handling
+local function main()
+    -- Catch any errors
+    local success, err = pcall(function()
+        local result = install()
+        
+        -- Cleanup
+        term.setCursorPos(1, height)
+        term.setTextColor(colors.white)
+        term.setBackgroundColor(colors.black)
+        
+        if not result then
+            print("Installation failed. Check /install-errors.log for details.")
+        end
+    end)
+    
+    if not success then
+        -- Emergency error handling
+        term.setTextColor(colors.red)
+        term.setBackgroundColor(colors.black)
+        print("")
+        print("FATAL ERROR: " .. tostring(err))
+        print("Please report this issue.")
+        
+        -- Try to save crash log
+        local crashLog = fs.open("/install-crash.log", "w")
+        if crashLog then
+            crashLog.writeLine("RedNet-Explorer Installer Crash")
+            crashLog.writeLine("Time: " .. os.date())
+            crashLog.writeLine("Error: " .. tostring(err))
+            crashLog.close()
+            print("Crash log saved to /install-crash.log")
+        end
+    end
+end
+
+-- Run the installer
+main()
