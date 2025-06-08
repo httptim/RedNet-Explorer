@@ -415,27 +415,27 @@ if request.method == "POST" then
     storage.set("messages", messages)
     
     -- Show success page
-    print([[<rwml version="1.0">
-    <head>
-        <title>Message Sent</title>
-    </head>
-    <body bgcolor="black" color="white">
-        <div bgcolor="green" color="white" padding="1">
-            <h1>Thank You!</h1>
-        </div>
-        
-        <div padding="2">
-            <p>Your message has been received.</p>
-            <p><b>Name:</b> ]] .. html.escape(name) .. [[</p>
-            <p><b>Message:</b></p>
-            <div bgcolor="gray" padding="1">
-                <p>]] .. html.escape(message) .. [[</p>
-            </div>
-            
-            <p><link url="/">Back to Home</link></p>
-        </div>
-    </body>
-    </rwml>]])
+    print("<rwml version=\"1.0\">")
+    print("    <head>")
+    print("        <title>Message Sent</title>")
+    print("    </head>")
+    print("    <body bgcolor=\"black\" color=\"white\">")
+    print("        <div bgcolor=\"green\" color=\"white\" padding=\"1\">")
+    print("            <h1>Thank You!</h1>")
+    print("        </div>")
+    print("        ")
+    print("        <div padding=\"2\">")
+    print("            <p>Your message has been received.</p>")
+    print("            <p><b>Name:</b> " .. html.escape(name) .. "</p>")
+    print("            <p><b>Message:</b></p>")
+    print("            <div bgcolor=\"gray\" padding=\"1\">")
+    print("                <p>" .. html.escape(message) .. "</p>")
+    print("            </div>")
+    print("            ")
+    print("            <p><link url=\"/\">Back to Home</link></p>")
+    print("        </div>")
+    print("    </body>")
+    print("    </rwml>")
 else
     -- Redirect to form
     response.redirect("/contact.rwml")
@@ -521,15 +521,15 @@ function devPortal.handleRequest(request)
                     headers = {
                         ["Content-Type"] = "text/rwml"
                     },
-                    body = [[<rwml version="1.0">
-                    <body bgcolor="black" color="white">
-                        <h1 color="red">File Already Exists</h1>
-                        <p>The file ]] .. fileName .. [[ already exists.</p>
-                        <p>Please choose a different name or edit the existing file.</p>
-                        <p><link url="rdnt://dev-portal/browse">Browse Files</link></p>
-                        <p><link url="rdnt://dev-portal/new">Back</link></p>
-                    </body>
-                    </rwml>]]
+                    body = "<rwml version=\"1.0\">" ..
+                           "<body bgcolor=\"black\" color=\"white\">" ..
+                           "<h1 color=\"red\">File Already Exists</h1>" ..
+                           "<p>The file " .. fileName .. " already exists.</p>" ..
+                           "<p>Please choose a different name or edit the existing file.</p>" ..
+                           "<p><link url=\"rdnt://dev-portal/browse\">Browse Files</link></p>" ..
+                           "<p><link url=\"rdnt://dev-portal/new\">Back</link></p>" ..
+                           "</body>" ..
+                           "</rwml>"
                 }
             end
             
@@ -545,14 +545,14 @@ function devPortal.handleRequest(request)
                     headers = {
                         ["Content-Type"] = "text/rwml"
                     },
-                    body = [[<rwml version="1.0">
-                    <body bgcolor="black" color="white">
-                        <h1 color="green">File Created</h1>
-                        <p>Created: ]] .. fileName .. [[</p>
-                        <p>Opening editor...</p>
-                        <meta http-equiv="refresh" content="1;url=rdnt://dev-portal/edit?file=]] .. fileName .. [[" />
-                    </body>
-                    </rwml>]]
+                    body = "<rwml version=\"1.0\">" ..
+                           "<body bgcolor=\"black\" color=\"white\">" ..
+                           "<h1 color=\"green\">File Created</h1>" ..
+                           "<p>Created: " .. fileName .. "</p>" ..
+                           "<p>Opening editor...</p>" ..
+                           "<meta http-equiv=\"refresh\" content=\"1;url=rdnt://dev-portal/edit?file=" .. fileName .. "\" />" ..
+                           "</body>" ..
+                           "</rwml>"
                 }
             end
         end
@@ -618,15 +618,15 @@ function devPortal.handleRequest(request)
                 headers = {
                     ["Content-Type"] = "text/rwml"
                 },
-                body = [[<rwml version="1.0">
-                <body bgcolor="black" color="white">
-                    <h1>Opening Editor</h1>
-                    <p>Editing: ]] .. fileName .. [[</p>
-                    <p>The editor opens in terminal mode.</p>
-                    <p>Run: <code>dev-portal edit ]] .. fileName .. [[</code></p>
-                    <p><link url="rdnt://dev-portal">Back to Portal</link></p>
-                </body>
-                </rwml>]]
+                body = "<rwml version=\"1.0\">" ..
+                       "<body bgcolor=\"black\" color=\"white\">" ..
+                       "<h1>Opening Editor</h1>" ..
+                       "<p>Editing: " .. fileName .. "</p>" ..
+                       "<p>The editor opens in terminal mode.</p>" ..
+                       "<p>Run: <code>dev-portal edit " .. fileName .. "</code></p>" ..
+                       "<p><link url=\"rdnt://dev-portal\">Back to Portal</link></p>" ..
+                       "</body>" ..
+                       "</rwml>"
             }
         else
             return {

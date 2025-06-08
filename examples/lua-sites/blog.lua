@@ -160,7 +160,7 @@ print([[
     <p align="center">
         <link url="/">Home</link> | 
         <link url="/blog.lua">Blog Home</link> | 
-        <span color="gray">Posts: ]] .. #posts .. [[</span>
+        <span color="gray">Posts: ]] .. #posts .. "</span>" .. [[
     </p>
 </body>
 </rwml>]])

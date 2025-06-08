@@ -44,7 +44,7 @@ function googlePortal.generateSearchPage(query, results)
             <table width="100%">
                 <tr>
                     <td width="80%">
-                        <input type="text" name="q" value="]] .. (query or "") .. [[" 
+                        <input type="text" name="q" value="]] .. (query or "") .. "\" " .. [[
                                placeholder="Search RedNet..." style="width:100%" />
                     </td>
                     <td width="20%" align="right">
@@ -68,7 +68,7 @@ function googlePortal.generateSearchPage(query, results)
         if results.total > 0 then
             html = html .. [[
         <hr color="gray" />
-        <p color="yellow">Found ]] .. results.total .. [[ results for "]] .. query .. [["</p>
+        <p color="yellow">Found ]] .. results.total .. " results for \"" .. query .. "\"</p>" .. [[
         
         <div padding="1">
 ]]
@@ -79,7 +79,7 @@ function googlePortal.generateSearchPage(query, results)
                 
                 html = html .. [[
             <div margin="1">
-                <h3><link url="]] .. doc.url .. [[">]] .. doc.title .. [[</link></h3>
+                <h3><link url="]] .. doc.url .. "\">" .. doc.title .. "</link></h3>" .. [[
                 <p color="green" size="small">]] .. doc.url .. [[</p>
                 <p color="gray">]] .. snippet .. [[</p>
                 <p color="gray" size="small">
@@ -121,7 +121,7 @@ function googlePortal.generateSearchPage(query, results)
         else
             html = html .. [[
         <hr color="gray" />
-        <p color="yellow">No results found for "]] .. query .. [["</p>
+        <p color="yellow">No results found for "]] .. query .. "\"</p>" .. [[
         <p>Try different keywords or check your spelling.</p>
 ]]
         end
@@ -153,7 +153,7 @@ function googlePortal.generateSearchPage(query, results)
     
     <div bgcolor="gray" color="black" padding="1" align="center">
         <p size="small">
-            Indexed: ]] .. searchEngine.getStats(searchState.index).totalDocuments .. [[ pages | 
+            Indexed: ]] .. searchEngine.getStats(searchState.index).totalDocuments .. " pages | " .. [[
             <link url="rdnt://google/stats">Statistics</link> | 
             <link url="rdnt://google/about">About</link>
         </p>
@@ -408,7 +408,7 @@ function googlePortal.generateStatsPage()
         <table>
             <tr>
                 <td><b>Total Documents:</b></td>
-                <td>]] .. stats.totalDocuments .. [[</td>
+                <td>]] .. stats.totalDocuments .. "</td>" .. [[
             </tr>
             <tr>
                 <td><b>Unique Terms:</b></td>
@@ -428,7 +428,7 @@ function googlePortal.generateStatsPage()
         <ul>
             <li>Average terms per document: ]] .. 
                 string.format("%.1f", stats.totalTerms / math.max(1, stats.totalDocuments)) .. [[</li>
-            <li>Index version: ]] .. stats.version .. [[</li>
+            <li>Index version: ]] .. stats.version .. "</li>" .. [[
         </ul>
         
         <h3 color="lime">Actions</h3>

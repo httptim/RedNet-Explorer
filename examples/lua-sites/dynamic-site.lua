@@ -119,7 +119,7 @@ end
 print([[
     <hr color="gray" />
     <p align="center">
-        <span color="gray">Powered by RedNet-Explorer | Server time: ]] .. os.date("%H:%M:%S") .. [[</span>
+        <span color="gray">Powered by RedNet-Explorer | Server time: ]] .. os.date("%H:%M:%S") .. "</span>" .. [[
     </p>
 </body>
 </rwml>]])

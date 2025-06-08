@@ -146,26 +146,26 @@ if request.method == "POST" then
     storage.set("contact_messages", messages)
     
     -- Show success page
-    print([[<rwml version="1.0">
-<head>
-    <title>Message Sent - {{site_name}}</title>
-</head>
-<body bgcolor="{{bg_color}}" color="{{text_color}}">
-    <div bgcolor="green" color="white" padding="1">
-        <h1>Thank You!</h1>
-    </div>
-    
-    <div padding="2">
-        <p>Your message has been received. We'll get back to you soon!</p>
-        <p><b>Your message:</b></p>
-        <div bgcolor="gray" padding="1">
-            <p>]] .. html.escape(message) .. [[</p>
-        </div>
-        
-        <p><link url="/">Return to Home</link></p>
-    </div>
-</body>
-</rwml>]])
+    print("<rwml version=\"1.0\">")
+    print("<head>")
+    print("    <title>Message Sent - {{site_name}}</title>")
+    print("</head>")
+    print("<body bgcolor=\"{{bg_color}}\" color=\"{{text_color}}\">")
+    print("    <div bgcolor=\"green\" color=\"white\" padding=\"1\">")
+    print("        <h1>Thank You!</h1>")
+    print("    </div>")
+    print("    ")
+    print("    <div padding=\"2\">")
+    print("        <p>Your message has been received. We'll get back to you soon!</p>")
+    print("        <p><b>Your message:</b></p>")
+    print("        <div bgcolor=\"gray\" padding=\"1\">")
+    print("            <p>" .. html.escape(message) .. "</p>")
+    print("        </div>")
+    print("        ")
+    print("        <p><link url=\"/\">Return to Home</link></p>")
+    print("    </div>")
+    print("</body>")
+    print("</rwml>")
 else
     response.redirect("/contact")
 end]]
