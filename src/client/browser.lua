@@ -50,6 +50,13 @@ function browser.init()
     print("  - Initializing DNS...")
     dnsSystem.init()
     
+    print("  - Initializing discovery...")
+    local discovery = require("src.common.discovery")
+    discovery.init(discovery.PEER_TYPES.CLIENT, {
+        name = "RedNet-Explorer Browser",
+        version = "1.0.0"
+    })
+    
     print("  - Initializing UI...")
     ui.init(browser.CONFIG)
     
@@ -90,22 +97,60 @@ function browser.run()
     -- Navigate to homepage
     browser.navigate(browser.CONFIG.homepage)
     
-    -- Main event loop
-    while state.running do
-        local event, param1, param2, param3 = os.pullEvent()
-        
-        if event == "key" then
-            browser.handleKey(param1)
-        elseif event == "char" then
-            browser.handleChar(param1)
-        elseif event == "mouse_click" then
-            browser.handleClick(param1, param2, param3)
-        elseif event == "mouse_scroll" then
-            browser.handleScroll(param1, param2, param3)
-        elseif event == "term_resize" then
-            browser.handleResize()
+    -- Main event loop function
+    local function eventLoop()
+        while state.running do
+            local event, param1, param2, param3 = os.pullEvent()
+            
+            if event == "key" then
+                browser.handleKey(param1)
+            elseif event == "char" then
+                browser.handleChar(param1)
+            elseif event == "mouse_click" then
+                browser.handleClick(param1, param2, param3)
+            elseif event == "mouse_scroll" then
+                browser.handleScroll(param1, param2, param3)
+            elseif event == "term_resize" then
+                browser.handleResize()
+            end
         end
     end
+    
+    -- Prepare parallel tasks
+    local tasks = { eventLoop }
+    
+    -- Add DNS responder if available
+    local dns = require("src.dns.dns")
+    if dns.startResponder then
+        local dnsResponder = dns.startResponder()
+        if type(dnsResponder) == "function" then
+            table.insert(tasks, dnsResponder)
+        end
+    end
+    
+    -- Add cache autosave if available
+    local cache = require("src.dns.cache")
+    if cache.startAutosave then
+        local cacheAutosave = cache.startAutosave()
+        if type(cacheAutosave) == "function" then
+            table.insert(tasks, cacheAutosave)
+        end
+    end
+    
+    -- Add discovery scanner
+    local discovery = require("src.common.discovery")
+    if discovery.startScanning then
+        local scan, listen = discovery.startScanning()
+        if type(scan) == "function" then
+            table.insert(tasks, scan)
+        end
+        if type(listen) == "function" then
+            table.insert(tasks, listen)
+        end
+    end
+    
+    -- Run all tasks in parallel
+    parallel.waitForAll(table.unpack(tasks))
     
     -- Cleanup
     browser.shutdown()

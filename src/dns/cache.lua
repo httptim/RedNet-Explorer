@@ -29,8 +29,8 @@ function cache.init()
     -- Load existing cache
     cache.load()
     
-    -- Start autosave
-    cache.startAutosave()
+    -- Don't start autosave here - it should be started in parallel
+    -- by the caller when needed
     
     return true
 end
@@ -289,8 +289,9 @@ function cache.load()
 end
 
 -- Start autosave routine
+-- This returns the function to be run in parallel, doesn't block
 function cache.startAutosave()
-    local function autosave()
+    return function()
         while true do
             sleep(cache.CONFIG.autosaveInterval)
             
@@ -299,9 +300,6 @@ function cache.startAutosave()
             end
         end
     end
-    
-    -- Run in parallel
-    parallel.waitForAny(autosave)
 end
 
 -- Get cache entries (for debugging/inspection)

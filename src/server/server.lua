@@ -102,13 +102,53 @@ function server.run()
     -- Display server info
     server.displayInfo()
     
-    -- Start server components
-    parallel.waitForAll(
+    -- Prepare parallel tasks
+    local tasks = {
         server.listenForRequests,
         server.handleConnections,
         server.updateStats,
         server.cleanupConnections
-    )
+    }
+    
+    -- Add DNS responder if available
+    local dns = require("src.dns.dns")
+    if dns.startResponder then
+        local dnsResponder = dns.startResponder()
+        if type(dnsResponder) == "function" then
+            table.insert(tasks, dnsResponder)
+        end
+    end
+    
+    -- Add cache autosave if available
+    local cache = require("src.dns.cache")
+    if cache.startAutosave then
+        local cacheAutosave = cache.startAutosave()
+        if type(cacheAutosave) == "function" then
+            table.insert(tasks, cacheAutosave)
+        end
+    end
+    
+    -- Add discovery announcer if server
+    if discovery.startAnnouncing then
+        local announcer = discovery.startAnnouncing()
+        if type(announcer) == "function" then
+            table.insert(tasks, announcer)
+        end
+    end
+    
+    -- Add discovery scanner
+    if discovery.startScanning then
+        local scan, listen = discovery.startScanning()
+        if type(scan) == "function" then
+            table.insert(tasks, scan)
+        end
+        if type(listen) == "function" then
+            table.insert(tasks, listen)
+        end
+    end
+    
+    -- Start all server components in parallel
+    parallel.waitForAll(table.unpack(tasks))
 end
 
 -- Display server information

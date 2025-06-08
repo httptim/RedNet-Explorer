@@ -43,17 +43,14 @@ function discovery.init(peerType, info)
         startTime = os.epoch("utc")
     }
     
-    -- Start background tasks
-    discovery.startScanning()
-    
-    if peerType == discovery.PEER_TYPES.SERVER then
-        discovery.startAnnouncing()
-    end
+    -- Don't start background tasks here - they should be started
+    -- in parallel by the caller (server.run() or browser.run())
     
     return true
 end
 
 -- Start announcing presence (for servers)
+-- This returns the function to be run in parallel, doesn't block
 function discovery.startAnnouncing()
     if isAnnouncing then
         return false, "Already announcing"
@@ -61,7 +58,7 @@ function discovery.startAnnouncing()
     
     isAnnouncing = true
     
-    local function announce()
+    return function()
         while isAnnouncing and localPeerInfo do
             -- Create announcement
             local announcement = protocol.createServerAnnouncement({
@@ -76,11 +73,6 @@ function discovery.startAnnouncing()
             sleep(discovery.CONFIG.announceInterval)
         end
     end
-    
-    -- Run in parallel
-    parallel.waitForAny(announce)
-    
-    return true
 end
 
 -- Stop announcing
@@ -109,10 +101,8 @@ function discovery.startScanning()
         end
     end
     
-    -- Run both in parallel
-    parallel.waitForAny(scan, listen)
-    
-    return true
+    -- Return both functions to be run in parallel
+    return scan, listen
 end
 
 -- Stop scanning

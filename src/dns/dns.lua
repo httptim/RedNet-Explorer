@@ -400,8 +400,9 @@ function dns.announceRegistration(domain, target)
 end
 
 -- Start DNS responder service
+-- This returns the function to be run in parallel, doesn't block
 function dns.startResponder()
-    local function responder()
+    return function()
         while true do
             local message, senderId = protocol.receiveMessage(protocol.PROTOCOLS.DNS, 0.1)
             
@@ -436,9 +437,6 @@ function dns.startResponder()
             end
         end
     end
-    
-    -- Run in parallel
-    parallel.waitForAny(responder)
 end
 
 -- Get all registered domains
