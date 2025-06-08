@@ -207,7 +207,7 @@ local function drawBox(x, y, w, h, title)
 end
 
 local function drawProgressBar(y, progress, label)
-    local barWidth = width - 10
+    local barWidth = width - 20  -- Leave room for brackets and percentage
     local filled = math.floor(barWidth * progress)
     
     term.setCursorPos(5, y)
@@ -227,9 +227,11 @@ local function drawProgressBar(y, progress, label)
         term.write(string.rep(" ", barWidth - filled - 1))
     end
     
+    term.setTextColor(colors.box)  -- Make sure we're using the right color
     term.write("]")
     
-    term.setCursorPos(width - 6, y + 1)
+    -- Put percentage after the bar
+    term.write(" ")
     term.setTextColor(colors.text)
     term.write(string.format("%3d%%", math.floor(progress * 100)))
 end
