@@ -47,11 +47,17 @@ protocol.MESSAGE_TYPES = {
     -- Discovery messages
     SERVER_INFO = "SERVER_INFO",
     CLIENT_HELLO = "CLIENT_HELLO",
+    CLIENT_DISCOVER = "CLIENT_DISCOVER",
+    SERVER_ANNOUNCE = "SERVER_ANNOUNCE",
     
     -- Control messages
     PING = "PING",
     PONG = "PONG",
-    CLOSE = "CLOSE"
+    CLOSE = "CLOSE",
+    
+    -- Security messages
+    ENCRYPTED = "ENCRYPTED",
+    KEY_EXCHANGE = "KEY_EXCHANGE"
 }
 
 -- Status codes (similar to HTTP)
@@ -157,7 +163,7 @@ function protocol.createRequest(method, url, headers, body)
     }
     
     return protocol.createMessage(
-        protocol.MESSAGE_TYPES.GET,
+        method or "GET",
         data,
         { protocol = protocol.PROTOCOLS.HTTP_REQUEST }
     )
@@ -177,7 +183,7 @@ function protocol.createResponse(statusCode, headers, body, requestId)
     }
     
     return protocol.createMessage(
-        protocol.MESSAGE_TYPES.RESPONSE,
+        "RESPONSE",
         data,
         metadata
     )
@@ -196,7 +202,7 @@ function protocol.createError(statusCode, errorMessage, requestId)
     }
     
     return protocol.createMessage(
-        protocol.MESSAGE_TYPES.ERROR,
+        "ERROR",
         data,
         metadata
     )
@@ -205,7 +211,7 @@ end
 -- DNS query helper
 function protocol.createDnsQuery(domain)
     return protocol.createMessage(
-        protocol.MESSAGE_TYPES.DNS_QUERY,
+        "DNS_QUERY",
         { domain = domain },
         { protocol = protocol.PROTOCOLS.DNS }
     )
@@ -220,7 +226,7 @@ function protocol.createDnsResponse(domain, computerId, metadata)
     }
     
     return protocol.createMessage(
-        protocol.MESSAGE_TYPES.DNS_RESPONSE,
+        "DNS_RESPONSE",
         data,
         { protocol = protocol.PROTOCOLS.DNS }
     )
@@ -229,7 +235,7 @@ end
 -- Server announcement helper
 function protocol.createServerAnnouncement(serverInfo)
     return protocol.createMessage(
-        protocol.MESSAGE_TYPES.SERVER_INFO,
+        "SERVER_INFO",  -- Use string directly to avoid initialization issues
         serverInfo,
         { protocol = protocol.PROTOCOLS.SERVER_ANNOUNCE }
     )
@@ -238,7 +244,7 @@ end
 -- Ping/Pong helpers for connection testing
 function protocol.createPing()
     return protocol.createMessage(
-        protocol.MESSAGE_TYPES.PING,
+        "PING",
         { time = os.epoch("utc") },
         { protocol = protocol.PROTOCOLS.PING }
     )
@@ -246,7 +252,7 @@ end
 
 function protocol.createPong(pingTime)
     return protocol.createMessage(
-        protocol.MESSAGE_TYPES.PONG,
+        "PONG",
         {
             pingTime = pingTime,
             pongTime = os.epoch("utc")
@@ -314,7 +320,7 @@ function protocol.sendSecureMessage(recipient, message, protocolName, password)
     
     -- Wrap in protocol message
     local secureMessage = protocol.createMessage(
-        protocol.MESSAGE_TYPES.ENCRYPTED,
+        "ENCRYPTED",
         securePayload,
         { encrypted = true, protocol = protocolName or protocol.PROTOCOLS.BROWSER }
     )
@@ -334,7 +340,7 @@ function protocol.broadcastSecureMessage(message, protocolName, password)
     
     -- Wrap in protocol message
     local secureMessage = protocol.createMessage(
-        protocol.MESSAGE_TYPES.ENCRYPTED,
+        "ENCRYPTED",
         securePayload,
         { encrypted = true, protocol = protocolName or protocol.PROTOCOLS.BROWSER }
     )
@@ -407,9 +413,5 @@ function protocol.createSecureChannel(remoteId)
         established = false
     }
 end
-
--- Add ENCRYPTED message type
-protocol.MESSAGE_TYPES.ENCRYPTED = "ENCRYPTED"
-protocol.MESSAGE_TYPES.KEY_EXCHANGE = "KEY_EXCHANGE"
 
 return protocol

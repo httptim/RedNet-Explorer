@@ -764,13 +764,11 @@ function help.developmentPage()
                 return "&lt;h1&gt;Thank you, " .. name .. "!&lt;/h1&gt;"
             else
                 -- Show form
-                return [[
-                    &lt;form method="post"&gt;
-                        &lt;input name="name" placeholder="Name" /&gt;
-                        &lt;input name="email" placeholder="Email" /&gt;
-                        &lt;button type="submit"&gt;Submit&lt;/button&gt;
-                    &lt;/form&gt;
-                ]]
+                return "&lt;form method=\"post\"&gt;" ..
+                       "&lt;input name=\"name\" placeholder=\"Name\" /&gt;" ..
+                       "&lt;input name=\"email\" placeholder=\"Email\" /&gt;" ..
+                       "&lt;button type=\"submit\"&gt;Submit&lt;/button&gt;" ..
+                       "&lt;/form&gt;"
             end
         end
     }
@@ -875,14 +873,12 @@ function help.developmentPage()
                 return redirect("/")
             elseif request.path == "/new" then
                 -- Show new post form
-                return [[
-                    &lt;h1&gt;New Post&lt;/h1&gt;
-                    &lt;form method="post"&gt;
-                        &lt;input name="title" placeholder="Title" /&gt;
-                        &lt;textarea name="content"&gt;&lt;/textarea&gt;
-                        &lt;button type="submit"&gt;Post&lt;/button&gt;
-                    &lt;/form&gt;
-                ]]
+                return "&lt;h1&gt;New Post&lt;/h1&gt;" ..
+                       "&lt;form method=\"post\"&gt;" ..
+                       "&lt;input name=\"title\" placeholder=\"Title\" /&gt;" ..
+                       "&lt;textarea name=\"content\"&gt;&lt;/textarea&gt;" ..
+                       "&lt;button type=\"submit\"&gt;Post&lt;/button&gt;" ..
+                       "&lt;/form&gt;"
             else
                 -- List posts
                 local html = "&lt;h1&gt;Blog Posts&lt;/h1&gt;"

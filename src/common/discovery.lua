@@ -114,7 +114,7 @@ end
 function discovery.scanNetwork()
     -- Send discovery request
     local request = protocol.createMessage(
-        protocol.MESSAGE_TYPES.CLIENT_DISCOVER,
+        "CLIENT_DISCOVER",
         {
             peer = localPeerInfo,
             timestamp = os.epoch("utc")
