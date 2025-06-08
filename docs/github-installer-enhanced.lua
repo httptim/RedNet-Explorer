@@ -7,140 +7,95 @@ local REPO_NAME = "RedNet-Explorer"
 local BRANCH = "main"
 local INSTALL_DIR = "/rednet-explorer"
 
--- Error log
-local errorLog = {}
-
--- File manifest for RedNet-Explorer (96 files)
+-- File manifest for RedNet-Explorer
 local FILES = {
     -- Main files
     {url = "rednet-explorer.lua", path = "/rednet-explorer.lua"},
     
-    -- Common modules
-    {url = "src/common/protocol.lua", path = "/src/common/protocol.lua"},
-    {url = "src/common/encryption.lua", path = "/src/common/encryption.lua"},
-    {url = "src/common/connection.lua", path = "/src/common/connection.lua"},
-    {url = "src/common/discovery.lua", path = "/src/common/discovery.lua"},
+    -- Client files
+    {url = "src/client/browser.lua", path = "/rednet-explorer/client/browser.lua"},
+    {url = "src/client/ui.lua", path = "/rednet-explorer/client/ui.lua"},
+    {url = "src/client/renderer.lua", path = "/rednet-explorer/client/renderer.lua"},
+    {url = "src/client/navigation.lua", path = "/rednet-explorer/client/navigation.lua"},
+    {url = "src/client/history.lua", path = "/rednet-explorer/client/history.lua"},
+    {url = "src/client/bookmarks.lua", path = "/rednet-explorer/client/bookmarks.lua"},
     
-    -- DNS modules
-    {url = "src/dns/init.lua", path = "/src/dns/init.lua"},
-    {url = "src/dns/dns.lua", path = "/src/dns/dns.lua"},
-    {url = "src/dns/cache.lua", path = "/src/dns/cache.lua"},
-    {url = "src/dns/resolver.lua", path = "/src/dns/resolver.lua"},
-    {url = "src/dns/registry.lua", path = "/src/dns/registry.lua"},
+    -- Server files
+    {url = "src/server/server.lua", path = "/rednet-explorer/server/server.lua"},
+    {url = "src/server/request_handler.lua", path = "/rednet-explorer/server/request_handler.lua"},
+    {url = "src/server/static_server.lua", path = "/rednet-explorer/server/static_server.lua"},
+    {url = "src/server/dynamic_server.lua", path = "/rednet-explorer/server/dynamic_server.lua"},
+    {url = "src/server/sandbox.lua", path = "/rednet-explorer/server/sandbox.lua"},
+    {url = "src/server/mime_types.lua", path = "/rednet-explorer/server/mime_types.lua"},
     
-    -- Client modules
-    {url = "src/client/browser.lua", path = "/src/client/browser.lua"},
-    {url = "src/client/navigation.lua", path = "/src/client/navigation.lua"},
-    {url = "src/client/history.lua", path = "/src/client/history.lua"},
-    {url = "src/client/bookmarks.lua", path = "/src/client/bookmarks.lua"},
-    {url = "src/client/renderer.lua", path = "/src/client/renderer.lua"},
-    {url = "src/client/ui.lua", path = "/src/client/ui.lua"},
+    -- Common files
+    {url = "src/common/protocol.lua", path = "/rednet-explorer/common/protocol.lua"},
+    {url = "src/common/connection.lua", path = "/rednet-explorer/common/connection.lua"},
+    {url = "src/common/discovery.lua", path = "/rednet-explorer/common/discovery.lua"},
+    {url = "src/common/encryption.lua", path = "/rednet-explorer/common/encryption.lua"},
+    {url = "src/common/utils.lua", path = "/rednet-explorer/common/utils.lua"},
     
-    -- Server modules
-    {url = "src/server/server.lua", path = "/src/server/server.lua"},
-    {url = "src/server/fileserver.lua", path = "/src/server/fileserver.lua"},
-    {url = "src/server/handler.lua", path = "/src/server/handler.lua"},
-    {url = "src/server/config.lua", path = "/src/server/config.lua"},
-    {url = "src/server/logger.lua", path = "/src/server/logger.lua"},
+    -- DNS files
+    {url = "src/dns/init.lua", path = "/rednet-explorer/dns/init.lua"},
+    {url = "src/dns/dns.lua", path = "/rednet-explorer/dns/dns.lua"},
+    {url = "src/dns/cache.lua", path = "/rednet-explorer/dns/cache.lua"},
+    {url = "src/dns/resolver.lua", path = "/rednet-explorer/dns/resolver.lua"},
+    {url = "src/dns/registry.lua", path = "/rednet-explorer/dns/registry.lua"},
     
-    -- Content modules
-    {url = "src/content/rwml.lua", path = "/src/content/rwml.lua"},
-    {url = "src/content/lexer.lua", path = "/src/content/lexer.lua"},
-    {url = "src/content/parser.lua", path = "/src/content/parser.lua"},
-    {url = "src/content/rwml_renderer.lua", path = "/src/content/rwml_renderer.lua"},
-    {url = "src/content/sandbox.lua", path = "/src/content/sandbox.lua"},
+    -- Content files
+    {url = "src/content/rwml.lua", path = "/rednet-explorer/content/rwml.lua"},
+    {url = "src/content/lexer.lua", path = "/rednet-explorer/content/lexer.lua"},
+    {url = "src/content/parser.lua", path = "/rednet-explorer/content/parser.lua"},
+    {url = "src/content/rwml_renderer.lua", path = "/rednet-explorer/content/rwml_renderer.lua"},
     
-    -- Built-in websites
-    {url = "src/builtin/init.lua", path = "/src/builtin/init.lua"},
-    {url = "src/builtin/home.lua", path = "/src/builtin/home.lua"},
-    {url = "src/builtin/settings.lua", path = "/src/builtin/settings.lua"},
-    {url = "src/builtin/help.lua", path = "/src/builtin/help.lua"},
-    {url = "src/builtin/dev-portal.lua", path = "/src/builtin/dev-portal.lua"},
-    {url = "src/builtin/google-portal.lua", path = "/src/builtin/google-portal.lua"},
+    -- Search files
+    {url = "src/search/engine.lua", path = "/rednet-explorer/search/engine.lua"},
+    {url = "src/search/indexer.lua", path = "/rednet-explorer/search/indexer.lua"},
+    {url = "src/search/crawler.lua", path = "/rednet-explorer/search/crawler.lua"},
     
-    -- Development tools
-    {url = "src/devtools/editor.lua", path = "/src/devtools/editor.lua"},
-    {url = "src/devtools/filemanager.lua", path = "/src/devtools/filemanager.lua"},
-    {url = "src/devtools/preview.lua", path = "/src/devtools/preview.lua"},
-    {url = "src/devtools/templates.lua", path = "/src/devtools/templates.lua"},
-    {url = "src/devtools/template_wizard.lua", path = "/src/devtools/template_wizard.lua"},
-    {url = "src/devtools/assets.lua", path = "/src/devtools/assets.lua"},
-    {url = "src/devtools/site_generator.lua", path = "/src/devtools/site_generator.lua"},
+    -- UI files
+    {url = "src/ui/theme_manager.lua", path = "/rednet-explorer/ui/theme_manager.lua"},
     
-    -- Search engine
-    {url = "src/search/engine.lua", path = "/src/search/engine.lua"},
-    {url = "src/search/index.lua", path = "/src/search/index.lua"},
-    {url = "src/search/crawler.lua", path = "/src/search/crawler.lua"},
-    {url = "src/search/api.lua", path = "/src/search/api.lua"},
+    -- Built-in sites
+    {url = "src/builtin/init.lua", path = "/rednet-explorer/builtin/init.lua"},
+    {url = "src/builtin/home.lua", path = "/rednet-explorer/builtin/home.lua"},
+    {url = "src/builtin/help.lua", path = "/rednet-explorer/builtin/help.lua"},
+    {url = "src/builtin/settings.lua", path = "/rednet-explorer/builtin/settings.lua"},
+    {url = "src/builtin/google-portal.lua", path = "/rednet-explorer/builtin/google-portal.lua"},
+    {url = "src/builtin/dev-portal.lua", path = "/rednet-explorer/builtin/dev-portal.lua"},
     
-    -- Multi-tab browser
-    {url = "src/browser/multi_tab_browser.lua", path = "/src/browser/multi_tab_browser.lua"},
-    {url = "src/browser/tab_manager.lua", path = "/src/browser/tab_manager.lua"},
-    {url = "src/browser/concurrent_loader.lua", path = "/src/browser/concurrent_loader.lua"},
-    {url = "src/browser/tab_state.lua", path = "/src/browser/tab_state.lua"},
-    {url = "src/browser/resource_manager.lua", path = "/src/browser/resource_manager.lua"},
-    
-    -- Form processing
-    {url = "src/forms/form_parser.lua", path = "/src/forms/form_parser.lua"},
-    {url = "src/forms/form_renderer.lua", path = "/src/forms/form_renderer.lua"},
-    {url = "src/forms/form_validator.lua", path = "/src/forms/form_validator.lua"},
-    {url = "src/forms/form_processor.lua", path = "/src/forms/form_processor.lua"},
-    {url = "src/forms/session_manager.lua", path = "/src/forms/session_manager.lua"},
-    
-    -- Media support
-    {url = "src/media/image_loader.lua", path = "/src/media/image_loader.lua"},
-    {url = "src/media/image_renderer.lua", path = "/src/media/image_renderer.lua"},
-    {url = "src/media/download_manager.lua", path = "/src/media/download_manager.lua"},
-    {url = "src/media/asset_cache.lua", path = "/src/media/asset_cache.lua"},
-    {url = "src/media/progressive_loader.lua", path = "/src/media/progressive_loader.lua"},
-    
-    -- Security
-    {url = "src/security/permission_system.lua", path = "/src/security/permission_system.lua"},
-    {url = "src/security/content_scanner.lua", path = "/src/security/content_scanner.lua"},
-    {url = "src/security/network_guard.lua", path = "/src/security/network_guard.lua"},
-    
-    -- Performance
-    {url = "src/performance/memory_manager.lua", path = "/src/performance/memory_manager.lua"},
-    {url = "src/performance/network_optimizer.lua", path = "/src/performance/network_optimizer.lua"},
-    {url = "src/performance/search_cache.lua", path = "/src/performance/search_cache.lua"},
-    {url = "src/performance/benchmark.lua", path = "/src/performance/benchmark.lua"},
-    
-    -- UI enhancements
-    {url = "src/ui/theme_manager.lua", path = "/src/ui/theme_manager.lua"},
-    {url = "src/ui/accessibility.lua", path = "/src/ui/accessibility.lua"},
-    {url = "src/ui/mobile_adapter.lua", path = "/src/ui/mobile_adapter.lua"},
-    {url = "src/ui/enhancements.lua", path = "/src/ui/enhancements.lua"},
-    
-    -- Admin tools
-    {url = "src/admin/dashboard.lua", path = "/src/admin/dashboard.lua"},
-    {url = "src/admin/network_monitor.lua", path = "/src/admin/network_monitor.lua"},
-    {url = "src/admin/moderation.lua", path = "/src/admin/moderation.lua"},
-    {url = "src/admin/analytics.lua", path = "/src/admin/analytics.lua"},
-    {url = "src/admin/backup.lua", path = "/src/admin/backup.lua"},
-    
-    -- Admin launcher
-    {url = "rdnt-admin", path = "/rdnt-admin"},
-    
-    -- Test framework
-    {url = "tests/test_framework.lua", path = "/tests/test_framework.lua"},
-    
-    -- Launcher scripts
-    {url = "rdnt", path = "/rdnt"},
-    {url = "rdnt-server", path = "/rdnt-server"},
+    -- DevTools
+    {url = "src/devtools/generator.lua", path = "/rednet-explorer/devtools/generator.lua"},
+    {url = "src/devtools/templates.lua", path = "/rednet-explorer/devtools/templates.lua"},
 }
 
 -- Directories to create
 local DIRECTORIES = {
-    "/src", "/src/common", "/src/dns", "/src/client", "/src/server",
-    "/src/content", "/src/builtin", "/src/devtools", "/src/search",
-    "/src/browser", "/src/forms", "/src/media", "/src/security",
-    "/src/performance", "/src/ui", "/src/admin",
-    "/tests", "/examples", "/examples/rwml", "/examples/lua-sites",
-    "/templates", "/tools", "/docs", "/websites", "/cache",
-    "/admin", "/admin/logs", "/admin/backups"
+    "/rednet-explorer",
+    "/rednet-explorer/client",
+    "/rednet-explorer/server",
+    "/rednet-explorer/common",
+    "/rednet-explorer/dns",
+    "/rednet-explorer/content",
+    "/rednet-explorer/search",
+    "/rednet-explorer/ui",
+    "/rednet-explorer/builtin",
+    "/rednet-explorer/devtools",
+    "/rednet-explorer/websites",
+    "/rednet-explorer/data",
 }
 
--- Launcher scripts are now included in FILES list
+-- Launcher scripts
+local LAUNCHERS = {
+    {
+        name = "rdnt-browser",
+        content = [[shell.run("/rednet-explorer.lua", "browser")]]
+    },
+    {
+        name = "rdnt-server",
+        content = [[shell.run("/rednet-explorer.lua", "server")]]
+    },
+}
 
 -- Colors
 local colors = {
@@ -157,10 +112,8 @@ local colors = {
     scrollText = colors.lightGray
 }
 
--- Terminal size and scrolling state
+-- Terminal size
 local width, height = term.getSize()
-local displayScroll = 0  -- For scrolling the entire display
-local maxScroll = 0  -- Will be calculated based on content
 
 -- Scrolling window state
 local scrollWindow = {
@@ -204,10 +157,6 @@ local function drawBox(x, y, w, h, title)
 end
 
 local function drawProgressBar(y, progress, label)
-    if y < 1 or y + 1 > height then
-        return
-    end
-    
     local barWidth = width - 10
     local filled = math.floor(barWidth * progress)
     
@@ -216,47 +165,35 @@ local function drawProgressBar(y, progress, label)
     term.clearLine()
     term.write(label)
     
-    if y + 1 <= height then
-        term.setCursorPos(5, y + 1)
+    term.setCursorPos(5, y + 1)
+    term.setTextColor(colors.box)
+    term.write("[")
+    
+    term.setTextColor(colors.progress)
+    term.write(string.rep("=", filled))
+    if filled < barWidth then
+        term.write(">")
         term.setTextColor(colors.box)
-        term.write("[")
-        
-        term.setTextColor(colors.progress)
-        term.write(string.rep("=", filled))
-        if filled < barWidth then
-            term.write(">")
-            term.setTextColor(colors.box)
-            term.write(string.rep(" ", barWidth - filled - 1))
-        end
-        
-        term.write("]")
-        
-        term.setCursorPos(width - 6, y + 1)
-        term.setTextColor(colors.text)
-        term.write(string.format("%3d%%", math.floor(progress * 100)))
+        term.write(string.rep(" ", barWidth - filled - 1))
     end
+    
+    term.write("]")
+    
+    term.setCursorPos(width - 6, y + 1)
+    term.setTextColor(colors.text)
+    term.write(string.format("%3d%%", math.floor(progress * 100)))
 end
 
 -- Initialize scroll window
-local function initScrollWindow(yOffset)
-    yOffset = yOffset or 0
-    local actualY = scrollWindow.y + yOffset
-    
-    -- Only draw if visible
-    if actualY > height or actualY + scrollWindow.height < 1 then
-        return
-    end
-    
+local function initScrollWindow()
     -- Draw the scroll window box
-    drawBox(scrollWindow.x, actualY, scrollWindow.width, scrollWindow.height, "Download Log")
+    drawBox(scrollWindow.x, scrollWindow.y, scrollWindow.width, scrollWindow.height, "Download Log")
     
     -- Clear the inside
     term.setBackgroundColor(colors.scrollBg)
     for i = 1, scrollWindow.height - 2 do
-        if actualY + i >= 1 and actualY + i <= height then
-            term.setCursorPos(scrollWindow.x + 1, actualY + i)
-            term.write(string.rep(" ", scrollWindow.width - 2))
-        end
+        term.setCursorPos(scrollWindow.x + 1, scrollWindow.y + i)
+        term.write(string.rep(" ", scrollWindow.width - 2))
     end
     term.setBackgroundColor(colors.background)
 end
@@ -294,38 +231,27 @@ end
 
 -- Update scroll window display
 function updateScrollWindow()
-    local yOffset = -displayScroll
-    local actualY = scrollWindow.y + yOffset
-    
-    -- Only update if visible
-    if actualY > height or actualY + scrollWindow.height < 1 then
-        return
-    end
-    
     term.setBackgroundColor(colors.scrollBg)
     
     local displayHeight = scrollWindow.height - 2
     local startLine = scrollWindow.scrollPos + 1
     
     for i = 1, displayHeight do
-        local lineY = actualY + i
-        if lineY >= 1 and lineY <= height then
-            term.setCursorPos(scrollWindow.x + 1, lineY)
-            term.write(string.rep(" ", scrollWindow.width - 2))
+        term.setCursorPos(scrollWindow.x + 1, scrollWindow.y + i)
+        term.write(string.rep(" ", scrollWindow.width - 2))
+        
+        local lineIndex = startLine + i - 1
+        if scrollWindow.lines[lineIndex] then
+            local line = scrollWindow.lines[lineIndex]
+            term.setCursorPos(scrollWindow.x + 2, scrollWindow.y + i)
+            term.setTextColor(line.color)
             
-            local lineIndex = startLine + i - 1
-            if scrollWindow.lines[lineIndex] then
-                local line = scrollWindow.lines[lineIndex]
-                term.setCursorPos(scrollWindow.x + 2, lineY)
-                term.setTextColor(line.color)
-                
-                -- Truncate if too long
-                local displayText = line.text
-                if #displayText > scrollWindow.width - 4 then
-                    displayText = displayText:sub(1, scrollWindow.width - 7) .. "..."
-                end
-                term.write(displayText)
+            -- Truncate if too long
+            local displayText = line.text
+            if #displayText > scrollWindow.width - 4 then
+                displayText = displayText:sub(1, scrollWindow.width - 7) .. "..."
             end
+            term.write(displayText)
         end
     end
     
@@ -354,58 +280,22 @@ local function clearScreen()
     term.setCursorPos(1, 1)
 end
 
--- Render all content with scrolling
-local function renderDisplay()
+local function drawTitle()
     clearScreen()
-    
-    -- Calculate positions with scroll offset
-    local scrollOffset = -displayScroll
-    
-    -- Draw title (always visible)
-    if scrollOffset <= 0 then
-        drawTitle()
-    end
-    
-    -- Draw other content based on scroll position
-    -- This will be called by each drawing function
-end
-
-local function drawTitle(yOffset)
-    yOffset = yOffset or 0
     
     -- ASCII art
     term.setTextColor(colors.title)
-    if 2 + yOffset >= 1 and 2 + yOffset <= height then
-        centerText(2 + yOffset, " _   _ _   _         _____ _           ", colors.title)
-    end
-    if 3 + yOffset >= 1 and 3 + yOffset <= height then
-        centerText(3 + yOffset, "| | | | | | |       |_   _(_)          ", colors.title)
-    end
-    if 4 + yOffset >= 1 and 4 + yOffset <= height then
-        centerText(4 + yOffset, "| |_| | |_| |_ _ __   | |  _ _ __ ___  ", colors.title)
-    end
-    if 5 + yOffset >= 1 and 5 + yOffset <= height then
-        centerText(5 + yOffset, "|  _  | __| __| '_ \\  | | | | '_ ` _ \\ ", colors.title)
-    end
-    if 6 + yOffset >= 1 and 6 + yOffset <= height then
-        centerText(6 + yOffset, "| | | | |_| |_| |_) | | | | | | | | | |", colors.title)
-    end
-    if 7 + yOffset >= 1 and 7 + yOffset <= height then
-        centerText(7 + yOffset, "\\_| |_/\\__|\\__| .__/  \\_/ |_|_| |_| |_|", colors.title)
-    end
-    if 8 + yOffset >= 1 and 8 + yOffset <= height then
-        centerText(8 + yOffset, "              | |                      ", colors.title)
-    end
-    if 9 + yOffset >= 1 and 9 + yOffset <= height then
-        centerText(9 + yOffset, "              |_|                      ", colors.title)
-    end
+    centerText(2, " _   _ _   _         _____ _           ", colors.title)
+    centerText(3, "| | | | | | |       |_   _(_)          ", colors.title)
+    centerText(4, "| |_| | |_| |_ _ __   | |  _ _ __ ___  ", colors.title)
+    centerText(5, "|  _  | __| __| '_ \\  | | | | '_ ` _ \\ ", colors.title)
+    centerText(6, "| | | | |_| |_| |_) | | | | | | | | | |", colors.title)
+    centerText(7, "\\_| |_/\\__|\\__| .__/  \\_/ |_|_| |_| |_|", colors.title)
+    centerText(8, "              | |                      ", colors.title)
+    centerText(9, "              |_|                      ", colors.title)
     
-    if 11 + yOffset >= 1 and 11 + yOffset <= height then
-        centerText(11 + yOffset, "GitHub Installer", colors.subtitle)
-    end
-    if 12 + yOffset >= 1 and 12 + yOffset <= height then
-        centerText(12 + yOffset, "Installing: " .. REPO_NAME, colors.text)
-    end
+    centerText(11, "GitHub Installer", colors.subtitle)
+    centerText(12, "Installing: " .. REPO_NAME, colors.text)
 end
 
 -- Create progress bar string
@@ -434,24 +324,17 @@ end
 -- Show progress with animated download bar
 local function showProgress(current, total, fileInfo, fileProgress)
     local progress = current / total
-    local yOffset = -displayScroll
-    
-    -- Draw progress bar if visible
-    if 15 + yOffset >= 1 and 17 + yOffset <= height then
-        drawProgressBar(15 + yOffset, progress, string.format("Overall Progress: %d/%d files", current, total))
-    end
+    drawProgressBar(15, progress, string.format("Overall Progress: %d/%d files", current, total))
     
     -- Current file indicator
-    if 18 + yOffset >= 1 and 18 + yOffset <= height then
-        term.setCursorPos(5, 18 + yOffset)
-        term.setTextColor(colors.text)
-        term.clearLine()
-        local displayName = fileInfo.url
-        if #displayName > width - 15 then
-            displayName = "..." .. displayName:sub(-(width - 18))
-        end
-        term.write("Downloading: " .. displayName)
+    term.setCursorPos(5, 18)
+    term.setTextColor(colors.text)
+    term.clearLine()
+    local displayName = fileInfo.url
+    if #displayName > width - 15 then
+        displayName = "..." .. displayName:sub(-(width - 18))
     end
+    term.write("Downloading: " .. displayName)
     
     -- Add file entry if not exists
     local status = string.format("[%3d/%3d]", current, total)
@@ -485,12 +368,6 @@ end
 
 -- Download file with animated progress
 local function downloadFile(fileInfo, index, total)
-    -- Create directory if needed
-    local dir = fs.getDir(fileInfo.path)
-    if dir ~= "" and not fs.exists(dir) then
-        fs.makeDir(dir)
-    end
-    
     -- Simulate progressive download with animated bar
     for i = 0, 10 do
         local progress = i / 10
@@ -503,25 +380,20 @@ local function downloadFile(fileInfo, index, total)
         REPO_OWNER, REPO_NAME, BRANCH, fileInfo.url
     )
     
-    -- Determine if binary file
-    local isBinary = fileInfo.url:match("%.nfp$") or fileInfo.url:match("%.png$") or fileInfo.url:match("%.gif$")
-    
-    local response, httpError = http.get(url, nil, isBinary)
+    local response = http.get(url)
     if not response then
-        local errorMsg = string.format("         └─ ✗ Failed to download: %s", httpError or "Unknown error")
+        local errorMsg = string.format("         └─ ✗ Failed to download", colors.error)
         addScrollLine(errorMsg, colors.error, "progress_" .. index)
-        table.insert(errorLog, {file = fileInfo.url, error = httpError or "Failed to download"})
         return false, "Failed to download: " .. fileInfo.url
     end
     
     local content = response.readAll()
     response.close()
     
-    local file = fs.open(fileInfo.path, isBinary and "wb" or "w")
+    local file = fs.open(fileInfo.path, "w")
     if not file then
-        local errorMsg = string.format("         └─ ✗ Failed to write file")
+        local errorMsg = string.format("         └─ ✗ Failed to write file", colors.error)
         addScrollLine(errorMsg, colors.error, "progress_" .. index)
-        table.insert(errorLog, {file = fileInfo.path, error = "Failed to write file"})
         return false, "Failed to write: " .. fileInfo.path
     end
     
@@ -534,32 +406,8 @@ local function downloadFile(fileInfo, index, total)
     return true
 end
 
--- Handle scrolling
-local function handleScroll(direction)
-    local oldScroll = displayScroll
-    displayScroll = displayScroll + direction * 3  -- Scroll 3 lines at a time
-    
-    -- Limit scrolling
-    if displayScroll < 0 then
-        displayScroll = 0
-    elseif displayScroll > maxScroll then
-        displayScroll = maxScroll
-    end
-    
-    -- Redraw if scroll changed
-    if oldScroll ~= displayScroll then
-        clearScreen()
-        drawTitle(-displayScroll)
-        initScrollWindow(-displayScroll)
-        updateScrollWindow()
-    end
-end
-
 -- Main installation
 local function install()
-    -- Calculate max scroll based on content
-    maxScroll = math.max(0, 30 - height)  -- Adjust based on actual content height
-    
     drawTitle()
     
     -- Initialize scroll window
@@ -593,92 +441,33 @@ local function install()
     
     -- Download files
     local total = #FILES
-    local failedCount = 0
-    
     for i, fileInfo in ipairs(FILES) do
-        -- Allow scrolling during download
-        local timer = os.startTimer(0)
-        while true do
-            local event, param1 = os.pullEvent()
-            if event == "timer" and param1 == timer then
-                break
-            elseif event == "key" then
-                if param1 == keys.up then
-                    handleScroll(-1)
-                elseif param1 == keys.down then
-                    handleScroll(1)
-                elseif param1 == keys.pageUp then
-                    handleScroll(-10)
-                elseif param1 == keys.pageDown then
-                    handleScroll(10)
-                end
-            elseif event == "mouse_scroll" then
-                handleScroll(param1)
-            end
-        end
-        
         local success, err = downloadFile(fileInfo, i, total)
         if not success then
-            failedCount = failedCount + 1
-            addScrollLine("✗ Failed: " .. err, colors.error)
-            -- Continue with next file instead of stopping
+            addScrollLine("✗ Installation failed: " .. err, colors.error)
+            sleep(3)
+            return false
         end
     end
     
-    -- Show final status
-    if failedCount > 0 then
-        addScrollLine("", colors.text)
-        addScrollLine(string.format("✗ Installation completed with %d errors", failedCount), colors.error)
-        addScrollLine("Failed files:", colors.error)
-        for _, err in ipairs(errorLog) do
-            addScrollLine("  - " .. err.file .. ": " .. err.error, colors.error)
-        end
-    else
-        addScrollLine("", colors.text)
-        addScrollLine("✓ Installation complete!", colors.success)
-        addScrollLine("Run 'rdnt' to start the browser!", colors.success)
-        addScrollLine("Run 'rdnt-server' to start a server!", colors.success)
-    end
-    
-    -- Save error log if there were errors
-    if #errorLog > 0 then
-        local logFile = fs.open("/install-errors.log", "w")
-        if logFile then
-            logFile.write("RedNet-Explorer Installation Error Log\n")
-            logFile.write("Date: " .. os.date() .. "\n\n")
-            for _, err in ipairs(errorLog) do
-                logFile.write(string.format("File: %s\nError: %s\n\n", err.file, err.error))
-            end
-            logFile.close()
-            addScrollLine("Error log saved to /install-errors.log", colors.warning)
-        end
-    end
-    
-    -- Show scroll instructions
+    -- Create launchers
     addScrollLine("", colors.text)
-    addScrollLine("Use arrow keys or mouse wheel to scroll", colors.text)
-    
-    -- Wait for user input
-    while true do
-        local event, param1 = os.pullEvent()
-        if event == "key" then
-            if param1 == keys.up then
-                handleScroll(-1)
-            elseif param1 == keys.down then
-                handleScroll(1)
-            elseif param1 == keys.pageUp then
-                handleScroll(-10)
-            elseif param1 == keys.pageDown then
-                handleScroll(10)
-            elseif param1 == keys.enter or param1 == keys.space then
-                break
-            end
-        elseif event == "mouse_scroll" then
-            handleScroll(param1)
+    addScrollLine("Creating launcher scripts...", colors.warning)
+    for _, launcher in ipairs(LAUNCHERS) do
+        local file = fs.open("/" .. launcher.name, "w")
+        if file then
+            file.write(launcher.content)
+            file.close()
+            addScrollLine("  ✓ Created " .. launcher.name, colors.success)
         end
     end
     
-    return failedCount == 0
+    addScrollLine("", colors.text)
+    addScrollLine("✓ Installation complete!", colors.success)
+    addScrollLine("Run 'rdnt-browser' to start!", colors.success)
+    
+    sleep(3)
+    return true
 end
 
 -- Run installer
