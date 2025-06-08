@@ -32,6 +32,9 @@ function builtin.handleRequest(url, request)
         domain = "home"  -- Default to home
     end
     
+    -- Add the full URL to the request
+    request.url = url
+    
     -- Find handler
     local site = sites[domain]
     if site and site.handleRequest then

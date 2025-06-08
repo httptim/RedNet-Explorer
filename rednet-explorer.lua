@@ -136,13 +136,11 @@ local function startServer(options)
     print("Starting RedNet-Explorer server...")
     
     -- Load server module
-    local success, server = pcall(require, "src.server.server")
+    local success, result = pcall(require, "src.server.server")
     if not success then
-        -- Server not implemented yet
-        print("Server mode coming soon!")
-        print("Phase 1, Milestone 1.4 will implement server functionality")
-        return
+        error("Failed to load server module: " .. tostring(result))
     end
+    local server = result
     
     -- Apply options
     if options.port then

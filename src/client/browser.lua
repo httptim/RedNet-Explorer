@@ -159,7 +159,25 @@ end
 
 -- Load a RedNet page
 function browser.loadRedNetPage(domain, path)
-    -- Resolve domain
+    -- Check if this is a built-in page
+    local builtin = require("src.builtin.init")
+    if builtin.isBuiltinURL(state.currentUrl) then
+        local response = builtin.handleRequest(state.currentUrl, {
+            method = "GET",
+            path = path,
+            headers = {
+                ["User-Agent"] = "RedNet-Explorer/1.0",
+                ["Accept"] = "text/rwml, text/plain, application/lua"
+            }
+        })
+        
+        if response then
+            browser.renderPage(response.body, response.headers["Content-Type"])
+            return
+        end
+    end
+    
+    -- Not a built-in page, resolve domain normally
     local computerId, domainInfo = dnsSystem.lookup(domain)
     
     if not computerId then
@@ -402,8 +420,8 @@ end
 
 -- Show settings page
 function browser.showSettings()
-    -- TODO: Implement settings page
-    browser.renderPage("Settings page coming soon!", "text/plain")
+    -- Navigate to built-in settings page
+    browser.navigate("rdnt://settings")
 end
 
 -- Show menu

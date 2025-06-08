@@ -443,8 +443,26 @@ end
 
 -- Handle search requests
 function googlePortal.handleRequest(request)
-    local path = request.url or "/"
-    local params = request.params or {}
+    local url = request.url or request.path or "/"
+    
+    -- Parse URL and query parameters
+    local path, queryString = url:match("^([^?]+)%??(.*)")
+    path = path or url
+    
+    -- Parse query parameters from URL
+    local params = {}
+    if queryString and queryString ~= "" then
+        for key, value in queryString:gmatch("([^&=]+)=([^&=]+)") do
+            params[key] = value:gsub("%%20", " "):gsub("%%2B", "+"):gsub("%%2F", "/")
+        end
+    end
+    
+    -- Merge with request params if provided
+    if request.params then
+        for k, v in pairs(request.params) do
+            params[k] = v
+        end
+    end
     
     -- Initialize if needed
     if not searchState.index then
@@ -453,7 +471,13 @@ function googlePortal.handleRequest(request)
     
     -- Main search page
     if path == "/" or path == "/index.lua" or path == "rdnt://google" then
-        return googlePortal.generateSearchPage()
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = googlePortal.generateSearchPage()
+        }
         
     -- Search results
     elseif path:match("/search") then
@@ -474,18 +498,42 @@ function googlePortal.handleRequest(request)
             searchState.lastQuery = query
             searchState.lastResults = results
             
-            return googlePortal.generateSearchPage(query, results)
+            return {
+                status = 200,
+                headers = {
+                    ["Content-Type"] = "text/rwml"
+                },
+                body = googlePortal.generateSearchPage(query, results)
+            }
         else
-            return googlePortal.generateSearchPage()
+            return {
+                status = 200,
+                headers = {
+                    ["Content-Type"] = "text/rwml"
+                },
+                body = googlePortal.generateSearchPage()
+            }
         end
         
     -- Help page
     elseif path:match("/help") then
-        return googlePortal.generateHelpPage()
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = googlePortal.generateHelpPage()
+        }
         
     -- Advanced search
     elseif path:match("/advanced") then
-        return googlePortal.generateAdvancedPage()
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = googlePortal.generateAdvancedPage()
+        }
         
     -- Submit site
     elseif path:match("/submit") then
@@ -502,12 +550,24 @@ function googlePortal.handleRequest(request)
             </body>
             </rwml>]]
         else
-            return googlePortal.generateSubmitPage()
+            return {
+                status = 200,
+                headers = {
+                    ["Content-Type"] = "text/rwml"
+                },
+                body = googlePortal.generateSubmitPage()
+            }
         end
         
     -- Statistics
     elseif path:match("/stats") then
-        return googlePortal.generateStatsPage()
+        return {
+            status = 200,
+            headers = {
+                ["Content-Type"] = "text/rwml"
+            },
+            body = googlePortal.generateStatsPage()
+        }
         
     -- About page
     elseif path:match("/about") then
