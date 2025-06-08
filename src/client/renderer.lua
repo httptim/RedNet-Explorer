@@ -47,12 +47,20 @@ end
 function renderer.renderRWML(content)
     renderer.init()
     
-    -- Create a window for the content area
+    -- Get content dimensions
     local dims = ui.getContentDimensions()
-    local contentWindow = window.create(term.current(), 1, dims.top, dims.width, dims.height)
     
-    -- Use the new RWML renderer with the content window
-    local success, result = rwml.render(content, contentWindow, {
+    -- Create a window for the content area if window API is available
+    local contentTerm = term
+    if window then
+        contentTerm = window.create(term.current(), 1, dims.top, dims.width, dims.height)
+    else
+        -- Fallback: just use term but position cursor correctly
+        term.setCursorPos(1, dims.top)
+    end
+    
+    -- Use the new RWML renderer
+    local success, result = rwml.render(content, contentTerm, {
         renderOnError = true  -- Try to render even with errors
     })
     

@@ -184,8 +184,11 @@ function ui.drawAddressBar()
     local fieldWidth = state.width - fieldStart - 4
     
     term.setCursorPos(fieldStart, y)
-    term.setBackgroundColor(colors.white)
-    term.setTextColor(colors.black)
+    -- Use input colors from theme with fallbacks
+    local bgColor = colors.inputBackground or colors.addressBar or 1  -- fallback to white
+    local textColor = colors.inputText or colors.addressText or 32768  -- fallback to black
+    term.setBackgroundColor(bgColor)
+    term.setTextColor(textColor)
     term.write(string.rep(" ", fieldWidth))
     
     -- Draw URL
@@ -493,8 +496,8 @@ end
 
 -- Cleanup
 function ui.cleanup()
-    term.setBackgroundColor(colors.black)
-    term.setTextColor(colors.white)
+    term.setBackgroundColor(_G.colors.black)
+    term.setTextColor(_G.colors.white)
     term.clear()
     term.setCursorPos(1, 1)
 end

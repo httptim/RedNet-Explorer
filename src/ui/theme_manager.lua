@@ -4,9 +4,14 @@
 local themeManager = {}
 
 -- Load dependencies
-local colors = colors
-local fs = fs
-local textutils = textutils
+local colors = _G.colors or colors
+local fs = _G.fs or fs
+local textutils = _G.textutils or textutils
+
+-- Ensure colors API is available
+if not colors then
+    error("Colors API not available - are you running in CC:Tweaked?")
+end
 
 -- Theme configuration
 local config = {
@@ -73,13 +78,15 @@ local builtinThemes = {
             link = colors.blue,
             linkVisited = colors.purple,
             linkHover = colors.lightBlue,
+            
+            -- Buttons
             button = colors.gray,
             buttonText = colors.white,
             buttonHover = colors.lightGray,
             
-            -- Forms
-            inputBackground = colors.gray,
-            inputText = colors.white,
+            -- Input fields and forms
+            inputBackground = colors.white,
+            inputText = colors.black,
             inputBorder = colors.lightGray,
             inputFocus = colors.blue,
             
