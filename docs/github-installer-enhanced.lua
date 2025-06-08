@@ -195,8 +195,8 @@ shell.run("rednet-explorer", "server")]]
     },
 }
 
--- Colors
-local colors = {
+-- Color scheme (using different name to avoid shadowing colors API)
+local colorScheme = {
     title = colors.cyan,
     subtitle = colors.lightBlue,
     text = colors.white,
@@ -227,20 +227,20 @@ local scrollWindow = {
 -- Helper functions
 local function centerText(y, text, color)
     term.setCursorPos(math.floor((width - #text) / 2) + 1, y)
-    term.setTextColor(color or colors.text)
+    term.setTextColor(color or colorScheme.text)
     term.write(text)
 end
 
 local function drawBox(x, y, w, h, title)
-    term.setTextColor(colors.box)
+    term.setTextColor(colorScheme.box)
     term.setCursorPos(x, y)
     term.write("+" .. string.rep("-", w - 2) .. "+")
     
     if title then
         term.setCursorPos(x + 2, y)
-        term.setTextColor(colors.title)
+        term.setTextColor(colorScheme.title)
         term.write(" " .. title .. " ")
-        term.setTextColor(colors.box)
+        term.setTextColor(colorScheme.box)
     end
     
     for i = 1, h - 2 do
@@ -259,26 +259,26 @@ local function drawProgressBar(y, progress, label)
     local filled = math.floor(barWidth * progress)
     
     term.setCursorPos(5, y)
-    term.setTextColor(colors.text)
+    term.setTextColor(colorScheme.text)
     term.clearLine()
     term.write(label)
     
     term.setCursorPos(5, y + 1)
-    term.setTextColor(colors.box)
+    term.setTextColor(colorScheme.box)
     term.write("[")
     
-    term.setTextColor(colors.progress)
+    term.setTextColor(colorScheme.progress)
     term.write(string.rep("=", filled))
     if filled < barWidth then
         term.write(">")
-        term.setTextColor(colors.box)
+        term.setTextColor(colorScheme.box)
         term.write(string.rep(" ", barWidth - filled - 1))
     end
     
     term.write("]")
     
     term.setCursorPos(width - 6, y + 1)
-    term.setTextColor(colors.text)
+    term.setTextColor(colorScheme.text)
     term.write(string.format("%3d%%", math.floor(progress * 100)))
 end
 
@@ -288,18 +288,18 @@ local function initScrollWindow()
     drawBox(scrollWindow.x, scrollWindow.y, scrollWindow.width, scrollWindow.height, "Download Log")
     
     -- Clear the inside
-    term.setBackgroundColor(colors.scrollBg)
+    term.setBackgroundColor(colorScheme.scrollBg)
     for i = 1, scrollWindow.height - 2 do
         term.setCursorPos(scrollWindow.x + 1, scrollWindow.y + i)
         term.write(string.rep(" ", scrollWindow.width - 2))
     end
-    term.setBackgroundColor(colors.background)
+    term.setBackgroundColor(colorScheme.background)
 end
 
 -- Add line to scroll window
 local function addScrollLine(text, color, lineId)
     -- Add to lines buffer
-    local lineData = {text = text, color = color or colors.scrollText, id = lineId}
+    local lineData = {text = text, color = color or colorScheme.scrollText, id = lineId}
     
     if lineId then
         -- Update existing line with same ID
@@ -329,7 +329,7 @@ end
 
 -- Update scroll window display
 function updateScrollWindow()
-    term.setBackgroundColor(colors.scrollBg)
+    term.setBackgroundColor(colorScheme.scrollBg)
     
     local displayHeight = scrollWindow.height - 2
     local startLine = scrollWindow.scrollPos + 1
@@ -358,7 +358,7 @@ function updateScrollWindow()
         local scrollBarHeight = math.max(1, math.floor(displayHeight * displayHeight / #scrollWindow.lines))
         local scrollBarPos = math.floor((displayHeight - scrollBarHeight) * scrollWindow.scrollPos / (#scrollWindow.lines - displayHeight))
         
-        term.setTextColor(colors.box)
+        term.setTextColor(colorScheme.box)
         for i = 1, displayHeight do
             term.setCursorPos(scrollWindow.x + scrollWindow.width - 2, scrollWindow.y + i)
             if i >= scrollBarPos + 1 and i <= scrollBarPos + scrollBarHeight then
@@ -369,11 +369,11 @@ function updateScrollWindow()
         end
     end
     
-    term.setBackgroundColor(colors.background)
+    term.setBackgroundColor(colorScheme.background)
 end
 
 local function clearScreen()
-    term.setBackgroundColor(colors.background)
+    term.setBackgroundColor(colorScheme.background)
     term.clear()
     term.setCursorPos(1, 1)
 end
@@ -382,18 +382,18 @@ local function drawTitle()
     clearScreen()
     
     -- ASCII art
-    term.setTextColor(colors.title)
-    centerText(2, " _   _ _   _         _____ _           ", colors.title)
-    centerText(3, "| | | | | | |       |_   _(_)          ", colors.title)
-    centerText(4, "| |_| | |_| |_ _ __   | |  _ _ __ ___  ", colors.title)
-    centerText(5, "|  _  | __| __| '_ \\  | | | | '_ ` _ \\ ", colors.title)
-    centerText(6, "| | | | |_| |_| |_) | | | | | | | | | |", colors.title)
-    centerText(7, "\\_| |_/\\__|\\__| .__/  \\_/ |_|_| |_| |_|", colors.title)
-    centerText(8, "              | |                      ", colors.title)
-    centerText(9, "              |_|                      ", colors.title)
+    term.setTextColor(colorScheme.title)
+    centerText(2, " _   _ _   _         _____ _           ", colorScheme.title)
+    centerText(3, "| | | | | | |       |_   _(_)          ", colorScheme.title)
+    centerText(4, "| |_| | |_| |_ _ __   | |  _ _ __ ___  ", colorScheme.title)
+    centerText(5, "|  _  | __| __| '_ \\  | | | | '_ ` _ \\ ", colorScheme.title)
+    centerText(6, "| | | | |_| |_| |_) | | | | | | | | | |", colorScheme.title)
+    centerText(7, "\\_| |_/\\__|\\__| .__/  \\_/ |_|_| |_| |_|", colorScheme.title)
+    centerText(8, "              | |                      ", colorScheme.title)
+    centerText(9, "              |_|                      ", colorScheme.title)
     
-    centerText(11, "GitHub Installer", colors.subtitle)
-    centerText(12, "Installing: " .. REPO_NAME, colors.text)
+    centerText(11, "GitHub Installer", colorScheme.subtitle)
+    centerText(12, "Installing: " .. REPO_NAME, colorScheme.text)
 end
 
 -- Create progress bar string
@@ -426,7 +426,7 @@ local function showProgress(current, total, fileInfo, fileProgress)
     
     -- Current file indicator
     term.setCursorPos(5, 18)
-    term.setTextColor(colors.text)
+    term.setTextColor(colorScheme.text)
     term.clearLine()
     local displayName = fileInfo.url
     if #displayName > width - 15 then
@@ -441,14 +441,14 @@ local function showProgress(current, total, fileInfo, fileProgress)
     if fileProgress == 0 then
         -- Starting download
         local message = string.format("%s Pulling %s", status, fileName)
-        addScrollLine(message, colors.white, "file_" .. current)
+        addScrollLine(message, colorScheme.text, "file_" .. current)
     end
     
     -- Update progress bar line
     local progressBar = makeProgressBar(fileProgress, 20)
     local sizeInfo = string.format("%3d%%", math.floor(fileProgress * 100))
     local progressMsg = string.format("         └─ %s %s", progressBar, sizeInfo)
-    addScrollLine(progressMsg, colors.scrollText, "progress_" .. current)
+    addScrollLine(progressMsg, colorScheme.scrollText, "progress_" .. current)
 end
 
 -- Complete file download
@@ -457,11 +457,11 @@ local function completeFileDownload(current, total, fileInfo)
     local status = string.format("[%3d/%3d]", current, total)
     local fileName = fileInfo.url:match("([^/]+)$") or fileInfo.url
     local message = string.format("%s ✓ Pulled %s", status, fileName)
-    addScrollLine(message, colors.success, "file_" .. current)
+    addScrollLine(message, colorScheme.success, "file_" .. current)
     
     -- Update progress bar to complete
     local progressMsg = string.format("         └─ %s 100%%", makeProgressBar(1, 20))
-    addScrollLine(progressMsg, colors.success, "progress_" .. current)
+    addScrollLine(progressMsg, colorScheme.success, "progress_" .. current)
 end
 
 -- Download file with animated progress
@@ -505,7 +505,7 @@ local function downloadFile(fileInfo, index, total)
             stats.retries = stats.retries + 1
             if attempt < maxRetries then
                 local retryMsg = string.format("         └─ Retry %d/%d...", attempt, maxRetries-1)
-                addScrollLine(retryMsg, colors.warning, "progress_" .. index)
+                addScrollLine(retryMsg, colorScheme.warning, "progress_" .. index)
                 sleep(1)  -- Wait before retry
             end
         end
@@ -513,7 +513,7 @@ local function downloadFile(fileInfo, index, total)
     
     if not response then
         local errorMsg = string.format("         └─ ✗ Failed: %s", httpError or "Unknown error")
-        addScrollLine(errorMsg, colors.error, "progress_" .. index)
+        addScrollLine(errorMsg, colorScheme.error, "progress_" .. index)
         table.insert(errorLog, {
             file = fileInfo.url,
             path = fileInfo.path,
@@ -533,7 +533,7 @@ local function downloadFile(fileInfo, index, total)
     local file = fs.open(fileInfo.path, isBinary and "wb" or "w")
     if not file then
         local errorMsg = string.format("         └─ ✗ Failed to write file")
-        addScrollLine(errorMsg, colors.error, "progress_" .. index)
+        addScrollLine(errorMsg, colorScheme.error, "progress_" .. index)
         table.insert(errorLog, {
             file = fileInfo.url,
             path = fileInfo.path,
@@ -582,7 +582,7 @@ end
 
 -- Calculate total installation size
 local function calculateTotalSize()
-    addScrollLine("Estimating installation size...", colors.text)
+    addScrollLine("Estimating installation size...", colorScheme.text)
     local totalSize = 0
     
     -- Calculate based on file types
@@ -595,10 +595,10 @@ local function calculateTotalSize()
     totalSize = totalSize * 1.1  -- 10% overhead
     
     stats.totalSize = totalSize
-    addScrollLine(string.format("Estimated total: %.2f KB", totalSize/1024), colors.text)
+    addScrollLine(string.format("Estimated total: %.2f KB", totalSize/1024), colorScheme.text)
     
     -- More accurate method: Try to get actual sizes for a few files
-    addScrollLine("Getting accurate size (this may take a moment)...", colors.text)
+    addScrollLine("Getting accurate size (this may take a moment)...", colorScheme.text)
     
     -- GitHub API endpoint for repository info (if available)
     -- This would give us accurate sizes but requires API access
@@ -672,62 +672,62 @@ local function install()
     
     -- Calculate installation size
     local totalSize, sizeCache = calculateTotalSize()
-    addScrollLine(string.format("Total installation size: ~%.2f KB", totalSize/1024), colors.text)
-    addScrollLine("", colors.text)
+    addScrollLine(string.format("Total installation size: ~%.2f KB", totalSize/1024), colorScheme.text)
+    addScrollLine("", colorScheme.text)
     
     -- Check system requirements
-    addScrollLine("Checking system requirements...", colors.warning)
+    addScrollLine("Checking system requirements...", colorScheme.warning)
     local issues = checkRequirements(totalSize)
     
     local hasCritical = false
     for _, issue in ipairs(issues) do
         if issue.type == "critical" then
             hasCritical = true
-            addScrollLine("✗ " .. issue.msg, colors.error)
+            addScrollLine("✗ " .. issue.msg, colorScheme.error)
         else
-            addScrollLine("⚠ " .. issue.msg, colors.warning)
+            addScrollLine("⚠ " .. issue.msg, colorScheme.warning)
         end
     end
     
     if hasCritical then
-        addScrollLine("", colors.text)
-        addScrollLine("Cannot continue due to critical issues", colors.error)
+        addScrollLine("", colorScheme.text)
+        addScrollLine("Cannot continue due to critical issues", colorScheme.error)
         sleep(3)
         return false
     end
     
     if #issues > 0 then
-        addScrollLine("", colors.text)
-        addScrollLine("Press any key to continue anyway...", colors.text)
+        addScrollLine("", colorScheme.text)
+        addScrollLine("Press any key to continue anyway...", colorScheme.text)
         os.pullEvent("key")
     else
-        addScrollLine("✓ All requirements met", colors.success)
+        addScrollLine("✓ All requirements met", colorScheme.success)
     end
     
     -- Show installation info
-    addScrollLine("", colors.text)
-    addScrollLine("Starting installation...", colors.text)
-    addScrollLine("Repository: " .. REPO_OWNER .. "/" .. REPO_NAME, colors.text)
-    addScrollLine("Branch: " .. BRANCH, colors.text)
-    addScrollLine(string.format("Files to install: %d", #FILES), colors.text)
+    addScrollLine("", colorScheme.text)
+    addScrollLine("Starting installation...", colorScheme.text)
+    addScrollLine("Repository: " .. REPO_OWNER .. "/" .. REPO_NAME, colorScheme.text)
+    addScrollLine("Branch: " .. BRANCH, colorScheme.text)
+    addScrollLine(string.format("Files to install: %d", #FILES), colorScheme.text)
     if stats.totalSize > 0 then
-        addScrollLine(string.format("Estimated size: %.2f KB", stats.totalSize/1024), colors.text)
+        addScrollLine(string.format("Estimated size: %.2f KB", stats.totalSize/1024), colorScheme.text)
     end
-    addScrollLine("", colors.text)
+    addScrollLine("", colorScheme.text)
     
     -- Create directories
-    addScrollLine("Creating directory structure...", colors.warning)
+    addScrollLine("Creating directory structure...", colorScheme.warning)
     for _, dir in ipairs(DIRECTORIES) do
         if not fs.exists(dir) then
             fs.makeDir(dir)
-            addScrollLine("  ✓ Created " .. dir, colors.success)
+            addScrollLine("  ✓ Created " .. dir, colorScheme.success)
         else
-            addScrollLine("  • Exists " .. dir, colors.scrollText)
+            addScrollLine("  • Exists " .. dir, colorScheme.scrollText)
         end
     end
     
-    addScrollLine("", colors.text)
-    addScrollLine("Downloading files...", colors.warning)
+    addScrollLine("", colorScheme.text)
+    addScrollLine("Downloading files...", colorScheme.warning)
     
     -- Check for previous installation progress
     installedFiles = loadProgress()
@@ -739,9 +739,9 @@ local function install()
             end
         end
         if skipCount > 0 then
-            addScrollLine(string.format("Found %d previously installed files", skipCount), colors.warning)
-            addScrollLine("Resuming installation...", colors.text)
-            addScrollLine("", colors.text)
+            addScrollLine(string.format("Found %d previously installed files", skipCount), colorScheme.warning)
+            addScrollLine("Resuming installation...", colorScheme.text)
+            addScrollLine("", colorScheme.text)
         end
     end
     
@@ -762,7 +762,7 @@ local function install()
             if i % 10 == 0 then
                 local freeSpace = fs.getFreeSpace("/")
                 if freeSpace < 50000 then  -- Less than 50KB
-                    addScrollLine("✗ Out of disk space!", colors.error)
+                    addScrollLine("✗ Out of disk space!", colorScheme.error)
                     table.insert(errorLog, {
                         file = "SYSTEM",
                         path = "N/A",
@@ -778,7 +778,7 @@ local function install()
                 successCount = successCount + 1
             else
                 -- Continue with next file instead of stopping
-                addScrollLine("✗ Error: " .. err, colors.error)
+                addScrollLine("✗ Error: " .. err, colorScheme.error)
             end
         end
     end
@@ -787,25 +787,25 @@ local function install()
     local duration = (endTime - startTime) / 1000
     
     -- Create launchers
-    addScrollLine("", colors.text)
-    addScrollLine("Creating launcher scripts...", colors.warning)
+    addScrollLine("", colorScheme.text)
+    addScrollLine("Creating launcher scripts...", colorScheme.warning)
     for _, launcher in ipairs(LAUNCHERS) do
         local file = fs.open("/" .. launcher.name, "w")
         if file then
             file.write(launcher.content)
             file.close()
-            addScrollLine("  ✓ Created " .. launcher.name, colors.success)
+            addScrollLine("  ✓ Created " .. launcher.name, colorScheme.success)
         else
-            addScrollLine("  ✗ Failed to create " .. launcher.name, colors.error)
+            addScrollLine("  ✗ Failed to create " .. launcher.name, colorScheme.error)
             failedFiles = failedFiles + 1
         end
     end
     
     -- Final status
-    addScrollLine("", colors.text)
+    addScrollLine("", colorScheme.text)
     if failedFiles > 0 then
-        addScrollLine(string.format("✗ Installation completed with %d errors", failedFiles), colors.error)
-        addScrollLine("See /install-errors.log for details", colors.warning)
+        addScrollLine(string.format("✗ Installation completed with %d errors", failedFiles), colorScheme.error)
+        addScrollLine("See /install-errors.log for details", colorScheme.warning)
         
         -- Save error log
         local logFile = fs.open("/install-errors.log", "w")
@@ -831,30 +831,30 @@ local function install()
             logFile.close()
         end
     else
-        addScrollLine("✓ Installation complete!", colors.success)
-        addScrollLine(string.format("Successfully installed %d files in %.2f seconds", successCount, duration), colors.success)
+        addScrollLine("✓ Installation complete!", colorScheme.success)
+        addScrollLine(string.format("Successfully installed %d files in %.2f seconds", successCount, duration), colorScheme.success)
     end
     
     -- Show installation statistics
-    addScrollLine("", colors.text)
-    addScrollLine("Installation Statistics:", colors.text)
-    addScrollLine(string.format("  Downloaded: %.2f KB", stats.bytesDownloaded/1024), colors.text)
+    addScrollLine("", colorScheme.text)
+    addScrollLine("Installation Statistics:", colorScheme.text)
+    addScrollLine(string.format("  Downloaded: %.2f KB", stats.bytesDownloaded/1024), colorScheme.text)
     if stats.totalSize > 0 then
         local efficiency = (stats.bytesDownloaded / stats.totalSize) * 100
-        addScrollLine(string.format("  Size accuracy: %.1f%%", efficiency), colors.text)
+        addScrollLine(string.format("  Size accuracy: %.1f%%", efficiency), colorScheme.text)
     end
-    addScrollLine(string.format("  Average speed: %.2f KB/s", (stats.bytesDownloaded/1024)/duration), colors.text)
+    addScrollLine(string.format("  Average speed: %.2f KB/s", (stats.bytesDownloaded/1024)/duration), colorScheme.text)
     if stats.retries > 0 then
-        addScrollLine(string.format("  Network retries: %d", stats.retries), colors.warning)
+        addScrollLine(string.format("  Network retries: %d", stats.retries), colorScheme.warning)
     end
     
     -- Show final disk space
     local finalSpace = fs.getFreeSpace("/")
-    addScrollLine(string.format("  Disk space remaining: %d KB", finalSpace/1024), colors.text)
+    addScrollLine(string.format("  Disk space remaining: %d KB", finalSpace/1024), colorScheme.text)
     
-    addScrollLine("", colors.text)
-    addScrollLine("Run 'rdnt' to start the browser!", colors.success)
-    addScrollLine("Run 'rdnt-server' to start a server!", colors.success)
+    addScrollLine("", colorScheme.text)
+    addScrollLine("Run 'rdnt' to start the browser!", colorScheme.success)
+    addScrollLine("Run 'rdnt-server' to start a server!", colorScheme.success)
     
     -- Clean up progress file on successful completion
     if failedFiles == 0 and fs.exists(PROGRESS_FILE) then
@@ -894,14 +894,14 @@ end
 -- Clean up existing installation (optional)
 local function cleanInstall()
     if fs.exists("/rednet-explorer.lua") or fs.exists("/src") then
-        addScrollLine("Existing installation found", colors.warning)
-        addScrollLine("Press Y to remove and do clean install", colors.text)
-        addScrollLine("Press N to cancel", colors.text)
+        addScrollLine("Existing installation found", colorScheme.warning)
+        addScrollLine("Press Y to remove and do clean install", colorScheme.text)
+        addScrollLine("Press N to cancel", colorScheme.text)
         
         while true do
             local _, key = os.pullEvent("key")
             if key == keys.y then
-                addScrollLine("Removing old installation...", colors.warning)
+                addScrollLine("Removing old installation...", colorScheme.warning)
                 
                 -- Remove files
                 if fs.exists("/rednet-explorer.lua") then fs.delete("/rednet-explorer.lua") end
@@ -912,7 +912,7 @@ local function cleanInstall()
                 if fs.exists("/rdnt-admin") then fs.delete("/rdnt-admin") end
                 if fs.exists(PROGRESS_FILE) then fs.delete(PROGRESS_FILE) end
                 
-                addScrollLine("✓ Old installation removed", colors.success)
+                addScrollLine("✓ Old installation removed", colorScheme.success)
                 return true
             elseif key == keys.n then
                 return false
