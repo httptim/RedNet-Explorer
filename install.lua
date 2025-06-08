@@ -403,6 +403,47 @@ local function postInstall()
     os.pullEvent("key")
 end
 
+-- Clean existing installation
+local function cleanInstall()
+    printColor("Checking for existing installation...", colors.yellow)
+    
+    if fs.exists("rednet-explorer.lua") or fs.exists("src") then
+        printColor("Existing installation found!", colors.orange)
+        print("Do you want to remove it first for a clean install? (y/n)")
+        
+        local response = read()
+        if response:lower() == "y" then
+            printColor("Removing old installation...", colors.yellow)
+            
+            -- Remove main files
+            local filesToDelete = {
+                "rednet-explorer.lua", "rdnt", "rdnt-server", "rdnt-admin",
+                "config.json", "install.lua"
+            }
+            
+            for _, file in ipairs(filesToDelete) do
+                if fs.exists(file) then
+                    fs.delete(file)
+                end
+            end
+            
+            -- Remove directories
+            local dirsToDelete = {
+                "src", "tests", "examples", "templates", "tools", "docs",
+                "cache", "websites", "admin", "builtin"
+            }
+            
+            for _, dir in ipairs(dirsToDelete) do
+                if fs.exists(dir) then
+                    fs.delete(dir)
+                end
+            end
+            
+            printColor("Old installation removed", colors.lime)
+        end
+    end
+end
+
 -- Main installation process
 local function main()
     showBanner()
@@ -417,7 +458,12 @@ local function main()
     print("This will install RedNet-Explorer to your computer.")
     print("Install location: " .. shell.dir())
     print("")
-    print("Continue? (y/n)")
+    
+    -- Check for existing installation
+    cleanInstall()
+    
+    print("")
+    print("Continue with installation? (y/n)")
     
     local response = read()
     if response:lower() ~= "y" then
