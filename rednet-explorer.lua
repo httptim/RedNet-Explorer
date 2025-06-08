@@ -1,4 +1,3 @@
-#!/usr/bin/env lua
 -- RedNet-Explorer Main Launcher
 -- A modern web browser for CC:Tweaked
 

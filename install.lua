@@ -358,9 +358,7 @@ local function createLaunchers()
     printColor("Creating launcher scripts...", colors.yellow)
     
     -- Create browser launcher
-    local browserLauncher = [[
-#!/usr/bin/env lua
--- RedNet-Explorer Browser Launcher
+    local browserLauncher = [[-- RedNet-Explorer Browser Launcher
 shell.run("rednet-explorer", "browser")
 ]]
     
@@ -369,9 +367,7 @@ shell.run("rednet-explorer", "browser")
     file.close()
     
     -- Create server launcher
-    local serverLauncher = [[
-#!/usr/bin/env lua
--- RedNet-Explorer Server Launcher
+    local serverLauncher = [[-- RedNet-Explorer Server Launcher
 shell.run("rednet-explorer", "server")
 ]]
     

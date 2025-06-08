@@ -5,7 +5,7 @@ local crawler = {}
 
 -- Load dependencies
 local searchIndex = require("src.search.index")
-local rwmlParser = require("src.content.rwml_parser")
+local rwmlParser = require("src.content.parser")
 local sandbox = require("src.content.sandbox")
 
 -- Crawler configuration

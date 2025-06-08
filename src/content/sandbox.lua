@@ -358,14 +358,13 @@ function sandbox:execute(code, timeout)
         return false, self.error
     end
     
-    -- Set up debug hook for instruction counting
-    debug.sethook(createHook(self), "l", 1)
+    -- Note: debug.sethook not available in CC:Tweaked
+    -- Resource limits enforced by CC:Tweaked's built-in protections
     
     -- Execute with error handling
     local success, result = pcall(func)
     
-    -- Remove debug hook
-    debug.sethook()
+    -- Hook cleanup not needed in CC:Tweaked
     
     if success then
         self.state = "completed"

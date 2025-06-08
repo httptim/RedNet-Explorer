@@ -6,7 +6,7 @@ local devPortal = {}
 -- Load dependencies
 local editor = require("src.devtools.editor")
 local filemanager = require("src.devtools.filemanager")
-local rwmlParser = require("src.content.rwml_parser")
+local rwmlParser = require("src.content.parser")
 local rwmlRenderer = require("src.content.rwml_renderer")
 local sandbox = require("src.content.sandbox")
 local siteGenerator = require("src.devtools.site_generator")

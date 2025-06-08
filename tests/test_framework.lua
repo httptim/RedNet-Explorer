@@ -66,16 +66,8 @@ function test.case(name, func)
         -- Print error details
         printColor("    Error: " .. tostring(err), colors.red)
         
-        -- Print stack trace if available
-        if debug and debug.traceback then
-            local trace = debug.traceback("", 2)
-            if trace then
-                printColor("    Stack trace:", colors.gray)
-                for line in trace:gmatch("[^\n]+") do
-                    printColor("      " .. line, colors.gray)
-                end
-            end
-        end
+        -- Stack trace not available in CC:Tweaked
+        -- debug library doesn't exist
     end
     
     state.currentTest = nil

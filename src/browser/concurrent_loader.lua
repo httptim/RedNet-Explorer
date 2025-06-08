@@ -232,7 +232,7 @@ function concurrentLoader.processContent(content, contentType, url)
     
     if contentType == "rwml" then
         -- Parse RWML
-        local rwmlParser = require("src.content.rwml_parser")
+        local rwmlParser = require("src.content.parser")
         local ast = rwmlParser.parse(content)
         
         -- Extract title

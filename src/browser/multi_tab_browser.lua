@@ -268,7 +268,7 @@ function multiTabBrowser.renderTabContent(tabId)
         -- Render content
         if tab.content:match("^<rwml") then
             -- Parse and render RWML
-            local rwmlParser = require("src.content.rwml_parser")
+            local rwmlParser = require("src.content.parser")
             local ast = rwmlParser.parse(tab.content)
             
             if ast then

@@ -4,7 +4,7 @@
 local preview = {}
 
 -- Load dependencies
-local rwmlParser = require("src.content.rwml_parser")
+local rwmlParser = require("src.content.parser")
 local rwmlRenderer = require("src.content.rwml_renderer")
 local sandbox = require("src.content.sandbox")
 local colors = colors or colours
