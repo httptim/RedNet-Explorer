@@ -2,7 +2,7 @@
 -- Author: Http.Tim
 
 -- Configuration for RedNet-Explorer
-local REPO_OWNER = "your-username"  -- Change this to your GitHub username
+local REPO_OWNER = "httptim"  -- Change this to your GitHub username
 local REPO_NAME = "RedNet-Explorer"
 local BRANCH = "main"
 local INSTALL_DIR = "/rednet-explorer"
